@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+message: "If you use this dataset, please cite it as below and link the study page."
+type: dataset
+title: "Hotel prices across booking sites: 17 snapshots, September 22 to October 10, 2026"
+version: 1.0.0
+date-released: "2026-10-10"
+license: CC-BY-4.0
+authors:
+  - name: Underbook
+    website: "https://underbook.co"
+    email: hi@underbook.co
+repository: "https://github.com/DPWonder/hotel-price-study"
+url: "https://underbook.co/hotel-price-dispersion-study"
+abstract: >-
+  For each hotel, every booking site's nightly rate that Google Hotels listed for
+  the same 2-night stay (2 adults, US market, US dollars), reduced to the going
+  rate (the price most sites agree on), the cheapest price and the site that had
+  it, whether that listing named a room, whether its room name matched the room
+  at the going rate, whether fees were reported, and free cancellation. 17
+  snapshots taken September 22 to October 10, 2026, with 7,044 priced hotel rows
+  in 368 cities, plus two files that price the same stays again a week later.
+  One CSV per snapshot, with a Frictionless datapackage.json.
+keywords:
+  - hotels
+  - hotel prices
+  - price dispersion
+  - online travel agencies
+  - booking sites
+  - Google Hotels
+  - travel
+  - pricing

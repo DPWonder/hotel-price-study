@@ -1,0 +1,3 @@
+# The CSVs are byte-identical copies of the files served at underbook.co/data (CRLF line endings, checked by SHA256SUMS).
+# Never let git convert their line endings.
+data/*.csv -text

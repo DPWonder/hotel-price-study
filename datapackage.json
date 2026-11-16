@@ -1,0 +1,3532 @@
+{
+ "profile": "tabular-data-package",
+ "name": "hotel-price-study",
+ "id": "https://github.com/DPWonder/hotel-price-study",
+ "title": "Hotel prices across booking sites: 17 snapshots, September 22 to October 10, 2026",
+ "description": "7,044 hotel prices in 368 cities from 17 snapshots (September 22 to October 10, 2026): for each hotel, every booking site's nightly rate that Google Hotels listed for the same 2-night stay, reduced to the going rate (the price most sites agree on), the cheapest listing and the site that had it, whether that listing named a room, whether its room name matched, and free cancellation. Plus two week-later repeats of the same stays. One CSV per snapshot. Collected by Underbook; see README.md for the method and its limits.",
+ "version": "1.0.0",
+ "created": "2026-10-10T15:44:15Z",
+ "homepage": "https://github.com/DPWonder/hotel-price-study",
+ "licenses": [
+  {
+   "name": "CC-BY-4.0",
+   "title": "Creative Commons Attribution 4.0 International",
+   "path": "https://creativecommons.org/licenses/by/4.0/"
+  }
+ ],
+ "contributors": [
+  {
+   "title": "Underbook",
+   "path": "https://underbook.co",
+   "email": "hi@underbook.co",
+   "role": "author"
+  }
+ ],
+ "sources": [
+  {
+   "title": "Google Hotels, retrieved through the SerpApi google_hotels engine",
+   "path": "https://serpapi.com/google-hotels-api"
+  },
+  {
+   "title": "Underbook hotel price study (method, corrections and findings)",
+   "path": "https://underbook.co/hotel-price-dispersion-study"
+  }
+ ],
+ "keywords": [
+  "hotels",
+  "hotel prices",
+  "price dispersion",
+  "online travel agencies",
+  "booking sites",
+  "Google Hotels",
+  "travel",
+  "pricing",
+  "free cancellation"
+ ],
+ "resources": [
+  {
+   "name": "hotel-price-dispersion-2026-09",
+   "title": "Snapshot r1, September 22, 2026",
+   "description": "Snapshot r1: 25 large cities (US, Europe, Asia-Pacific), the first snapshot. Searched September 22, 2026 (UTC) for a 2-night stay 2026-10-13 to 2026-10-15 (21 days ahead), 2 adults, US market, US dollars. 426 hotels, one row each; 424 with a price.",
+   "path": "data/hotel-price-dispersion-2026-09.csv",
+   "profile": "tabular-data-resource",
+   "format": "csv",
+   "mediatype": "text/csv",
+   "encoding": "utf-8",
+   "bytes": 51863,
+   "hash": "sha256:2c71b30045e5cc2a3eced7acaad0d46d54f4f43728707ade46b1d63b34507a16",
+   "dialect": {
+    "delimiter": ",",
+    "lineTerminator": "\r\n",
+    "quoteChar": "\"",
+    "doubleQuote": true,
+    "header": true
+   },
+   "schema": {
+    "fields": [
+     {
+      "name": "city",
+      "type": "string",
+      "description": "The market searched: Google Hotels was asked for 'hotels in <city>'.",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "region",
+      "type": "string",
+      "description": "Study grouping, not a standard geography: US (United States); EU (Europe, including countries outside the European Union such as the UK, Norway, Switzerland and Iceland); AM (the Americas outside the US, including Canada, Latin America, the Caribbean and Puerto Rico); APAC (Asia-Pacific, which in this study also holds the Middle East, Istanbul, Cape Town and Marrakech).",
+      "constraints": {
+       "required": true,
+       "enum": [
+        "US",
+        "EU",
+        "AM",
+        "APAC"
+       ]
+      }
+     },
+     {
+      "name": "hotel",
+      "type": "string",
+      "description": "Property name as Google Hotels listed it. Only results Google Hotels typed as a hotel (not a vacation rental) were kept.",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "segment",
+      "type": "string",
+      "description": "'chain' when the hotel name matches a list of chain brand names fixed before the first run (Marriott, Hilton, Hyatt, IHG, Accor, Wyndham, Choice and others), otherwise 'independent'. A name rule: a chain hotel whose name carries no brand counts as independent.",
+      "constraints": {
+       "required": true,
+       "enum": [
+        "chain",
+        "independent"
+       ]
+      }
+     },
+     {
+      "name": "sites_listed",
+      "type": "integer",
+      "description": "Number of listing entries kept in the analysis for this hotel: the 12 lowest-priced entries, so never more than 12. A site that Google Hotels lists twice counts twice. The going rate and the cheapest price are computed from every entry, which for most hotels was more than 12. 0 when no price was returned.",
+      "constraints": {
+       "required": true,
+       "minimum": 0,
+       "maximum": 12
+      }
+     },
+     {
+      "name": "going_rate_usd",
+      "type": "integer",
+      "description": "The going rate, US dollars a night: the nightly price shared by the largest number of listings that offer free cancellation or name a room (all listings when none do), ties broken toward the lower price. Each listing's price is its before-tax nightly rate when the site reported one, otherwise the nightly rate it listed (which may include taxes and fees). Empty when no price was returned.",
+      "constraints": {
+       "minimum": 1
+      }
+     },
+     {
+      "name": "cheapest_usd",
+      "type": "integer",
+      "description": "The lowest nightly price among all listings for the hotel, US dollars, on the same basis as going_rate_usd. Empty when no price was returned.",
+      "constraints": {
+       "minimum": 1
+      }
+     },
+     {
+      "name": "cheapest_site",
+      "type": "string",
+      "description": "The site with the lowest price, as Google Hotels names it (for example 'Booking.com', 'Expedia.ca', 'trivago DEALS'). Ties keep Google Hotels' order. Empty when no price was returned."
+     },
+     {
+      "name": "discount_pct",
+      "type": "number",
+      "description": "100 x (going_rate_usd - cheapest_usd) / going_rate_usd, rounded to one decimal. To apply a threshold, compute it from the two price columns: rounding moves a few rows across a boundary. Empty when no price was returned.",
+      "constraints": {
+       "minimum": 0,
+       "maximum": 100
+      }
+     },
+     {
+      "name": "verdict",
+      "type": "string",
+      "description": "The label the Underbook price check gave on September 22, 2026. PARITY: no listing more than 5% below the going rate. UNVERIFIED_LOWER: the cheapest listing is more than 5% below the going rate and names no room. REAL_LOWER_MATCHED: the cheapest listing names a room and is more than 5% below the going rate; in this file it does NOT mean the room matched (rooms were not compared until September 23, 2026). none: no price was returned.",
+      "constraints": {
+       "required": true,
+       "enum": [
+        "PARITY",
+        "UNVERIFIED_LOWER",
+        "REAL_LOWER_MATCHED",
+        "none"
+       ]
+      }
+     },
+     {
+      "name": "cheapest_named_a_room",
+      "type": "boolean",
+      "description": "In this file only: yes when the cheapest listing names a room AND is more than 5% below the going rate (the same rows as verdict REAL_LOWER_MATCHED). In the later files the column means only 'names a room'.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "fees_unverified",
+      "type": "boolean",
+      "description": "yes when no listing for this hotel reported a before-tax rate, so every price for it is the rate as listed and fees such as resort or property fees may be missing from all of them. 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "check_in",
+      "type": "date",
+      "description": "Check-in date searched (2 adults, 2 nights).",
+      "format": "default",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "check_out",
+      "type": "date",
+      "description": "Check-out date searched.",
+      "format": "default",
+      "constraints": {
+       "required": true
+      }
+     }
+    ],
+    "missingValues": [
+     ""
+    ]
+   }
+  },
+  {
+   "name": "hotel-price-dispersion-2026-09-r2",
+   "title": "Snapshot r2, September 25, 2026",
+   "description": "Snapshot r2: the same 25 cities as r1, searched again. Searched September 25, 2026 (UTC) for a 2-night stay 2026-10-30 to 2026-11-01 (35 days ahead), 2 adults, US market, US dollars. 436 hotels, one row each; 434 with a price.",
+   "path": "data/hotel-price-dispersion-2026-09-r2.csv",
+   "profile": "tabular-data-resource",
+   "format": "csv",
+   "mediatype": "text/csv",
+   "encoding": "utf-8",
+   "bytes": 55797,
+   "hash": "sha256:42f44bbc701402667d00583833e60eb9b20d4953593fbe6acab0cff63c6e6aa7",
+   "dialect": {
+    "delimiter": ",",
+    "lineTerminator": "\r\n",
+    "quoteChar": "\"",
+    "doubleQuote": true,
+    "header": true
+   },
+   "schema": {
+    "fields": [
+     {
+      "name": "city",
+      "type": "string",
+      "description": "The market searched: Google Hotels was asked for 'hotels in <city>'. Two searches priced somewhere else and are labelled for what they priced: in r7, the search meant for Naples, Italy returned hotels in Naples, Florida (labelled 'Naples, Florida', region US); in r16, 'hotels in Hoi An' returned US East Coast beach hotels (kept under 'Hoi An', region US).",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "region",
+      "type": "string",
+      "description": "Study grouping, not a standard geography: US (United States); EU (Europe, including countries outside the European Union such as the UK, Norway, Switzerland and Iceland); AM (the Americas outside the US, including Canada, Latin America, the Caribbean and Puerto Rico); APAC (Asia-Pacific, which in this study also holds the Middle East, Istanbul, Cape Town and Marrakech).",
+      "constraints": {
+       "required": true,
+       "enum": [
+        "US",
+        "EU",
+        "AM",
+        "APAC"
+       ]
+      }
+     },
+     {
+      "name": "hotel",
+      "type": "string",
+      "description": "Property name as Google Hotels listed it. Only results Google Hotels typed as a hotel (not a vacation rental) were kept.",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "segment",
+      "type": "string",
+      "description": "'chain' when the hotel name matches a list of chain brand names fixed before the first run (Marriott, Hilton, Hyatt, IHG, Accor, Wyndham, Choice and others), otherwise 'independent'. A name rule: a chain hotel whose name carries no brand counts as independent.",
+      "constraints": {
+       "required": true,
+       "enum": [
+        "chain",
+        "independent"
+       ]
+      }
+     },
+     {
+      "name": "sites_listed",
+      "type": "integer",
+      "description": "Number of listing entries kept in the analysis for this hotel: the 12 lowest-priced entries, so never more than 12. A site that Google Hotels lists twice counts twice. The going rate and the cheapest price are computed from every entry, which for most hotels was more than 12. 0 when no price was returned.",
+      "constraints": {
+       "required": true,
+       "minimum": 0,
+       "maximum": 12
+      }
+     },
+     {
+      "name": "going_rate_usd",
+      "type": "integer",
+      "description": "The going rate, US dollars a night: the nightly price shared by the largest number of listings that offer free cancellation or name a room (all listings when none do), ties broken toward the lower price. Each listing's price is its before-tax nightly rate when the site reported one, otherwise the nightly rate it listed (which may include taxes and fees). Empty when no price was returned.",
+      "constraints": {
+       "minimum": 1
+      }
+     },
+     {
+      "name": "cheapest_usd",
+      "type": "integer",
+      "description": "The lowest nightly price among all listings for the hotel, US dollars, on the same basis as going_rate_usd. Empty when no price was returned.",
+      "constraints": {
+       "minimum": 1
+      }
+     },
+     {
+      "name": "cheapest_site",
+      "type": "string",
+      "description": "The site with the lowest price, as Google Hotels names it (for example 'Booking.com', 'Expedia.ca', 'trivago DEALS'). Ties keep Google Hotels' order. Empty when no price was returned."
+     },
+     {
+      "name": "discount_pct",
+      "type": "number",
+      "description": "100 x (going_rate_usd - cheapest_usd) / going_rate_usd, rounded to one decimal. To apply a threshold, compute it from the two price columns: rounding moves a few rows across a boundary. Empty when no price was returned.",
+      "constraints": {
+       "minimum": 0,
+       "maximum": 100
+      }
+     },
+     {
+      "name": "verdict",
+      "type": "string",
+      "description": "The study's label for the hotel. PARITY: no listing more than 5% below the going rate. UNVERIFIED_LOWER: the cheapest listing is more than 5% below the going rate and its room is not shown to match. REAL_LOWER_MATCHED: the cheapest listing names a room, is more than 5% below the going rate, and its first-listed room name matches the first-listed room name of a listing priced within 2% of the going rate, by the study's room-name rules. A name match is evidence, not proof, of the same room. Empty when no price was returned.",
+      "constraints": {
+       "enum": [
+        "PARITY",
+        "UNVERIFIED_LOWER",
+        "REAL_LOWER_MATCHED"
+       ]
+      }
+     },
+     {
+      "name": "cheaper_room_name_matched",
+      "type": "boolean",
+      "description": "yes when verdict is REAL_LOWER_MATCHED (the study page calls this the original room check; the stricter check introduced October 1, 2026 is not in these files). 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "cheapest_named_a_room",
+      "type": "boolean",
+      "description": "yes when the cheapest listing names at least one room type, whatever its price. 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "fees_unverified",
+      "type": "boolean",
+      "description": "yes when no listing for this hotel reported a before-tax rate, so every price for it is the rate as listed and fees such as resort or property fees may be missing from all of them. 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "check_in",
+      "type": "date",
+      "description": "Check-in date searched (2 adults, 2 nights).",
+      "format": "default",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "check_out",
+      "type": "date",
+      "description": "Check-out date searched.",
+      "format": "default",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "free_cancellation_elsewhere_same_or_less",
+      "type": "boolean",
+      "description": "yes when, for at least one of Booking.com, Expedia, Hotels.com or Agoda (matched by name, so 'Expedia.ca' counts as Expedia), that site's lowest listing has no free cancellation and a listing from another site offers free cancellation at no more than 1.02 times that price. Compared on the nightly rate including taxes and fees as the sites reported them. Empty when no price was returned.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ]
+     }
+    ],
+    "missingValues": [
+     ""
+    ]
+   }
+  },
+  {
+   "name": "hotel-price-dispersion-2026-09-r3-new-cities",
+   "title": "Snapshot r3, September 28, 2026",
+   "description": "Snapshot r3: 25 cities not in r1 or r2. Searched September 28, 2026 (UTC) for a 2-night stay 2026-11-02 to 2026-11-04 (35 days ahead), 2 adults, US market, US dollars. 428 hotels, one row each; 427 with a price.",
+   "path": "data/hotel-price-dispersion-2026-09-r3-new-cities.csv",
+   "profile": "tabular-data-resource",
+   "format": "csv",
+   "mediatype": "text/csv",
+   "encoding": "utf-8",
+   "bytes": 55406,
+   "hash": "sha256:54dbdc01cde18863af7e2b4ae05b0464e0234cc4fa20a7ec6cec857f1e2eaaf2",
+   "dialect": {
+    "delimiter": ",",
+    "lineTerminator": "\r\n",
+    "quoteChar": "\"",
+    "doubleQuote": true,
+    "header": true
+   },
+   "schema": {
+    "fields": [
+     {
+      "name": "city",
+      "type": "string",
+      "description": "The market searched: Google Hotels was asked for 'hotels in <city>'. Two searches priced somewhere else and are labelled for what they priced: in r7, the search meant for Naples, Italy returned hotels in Naples, Florida (labelled 'Naples, Florida', region US); in r16, 'hotels in Hoi An' returned US East Coast beach hotels (kept under 'Hoi An', region US).",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "region",
+      "type": "string",
+      "description": "Study grouping, not a standard geography: US (United States); EU (Europe, including countries outside the European Union such as the UK, Norway, Switzerland and Iceland); AM (the Americas outside the US, including Canada, Latin America, the Caribbean and Puerto Rico); APAC (Asia-Pacific, which in this study also holds the Middle East, Istanbul, Cape Town and Marrakech).",
+      "constraints": {
+       "required": true,
+       "enum": [
+        "US",
+        "EU",
+        "AM",
+        "APAC"
+       ]
+      }
+     },
+     {
+      "name": "hotel",
+      "type": "string",
+      "description": "Property name as Google Hotels listed it. Only results Google Hotels typed as a hotel (not a vacation rental) were kept.",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "segment",
+      "type": "string",
+      "description": "'chain' when the hotel name matches a list of chain brand names fixed before the first run (Marriott, Hilton, Hyatt, IHG, Accor, Wyndham, Choice and others), otherwise 'independent'. A name rule: a chain hotel whose name carries no brand counts as independent.",
+      "constraints": {
+       "required": true,
+       "enum": [
+        "chain",
+        "independent"
+       ]
+      }
+     },
+     {
+      "name": "sites_listed",
+      "type": "integer",
+      "description": "Number of listing entries kept in the analysis for this hotel: the 12 lowest-priced entries, so never more than 12. A site that Google Hotels lists twice counts twice. The going rate and the cheapest price are computed from every entry, which for most hotels was more than 12. 0 when no price was returned.",
+      "constraints": {
+       "required": true,
+       "minimum": 0,
+       "maximum": 12
+      }
+     },
+     {
+      "name": "going_rate_usd",
+      "type": "integer",
+      "description": "The going rate, US dollars a night: the nightly price shared by the largest number of listings that offer free cancellation or name a room (all listings when none do), ties broken toward the lower price. Each listing's price is its before-tax nightly rate when the site reported one, otherwise the nightly rate it listed (which may include taxes and fees). Empty when no price was returned.",
+      "constraints": {
+       "minimum": 1
+      }
+     },
+     {
+      "name": "cheapest_usd",
+      "type": "integer",
+      "description": "The lowest nightly price among all listings for the hotel, US dollars, on the same basis as going_rate_usd. Empty when no price was returned.",
+      "constraints": {
+       "minimum": 1
+      }
+     },
+     {
+      "name": "cheapest_site",
+      "type": "string",
+      "description": "The site with the lowest price, as Google Hotels names it (for example 'Booking.com', 'Expedia.ca', 'trivago DEALS'). Ties keep Google Hotels' order. Empty when no price was returned."
+     },
+     {
+      "name": "discount_pct",
+      "type": "number",
+      "description": "100 x (going_rate_usd - cheapest_usd) / going_rate_usd, rounded to one decimal. To apply a threshold, compute it from the two price columns: rounding moves a few rows across a boundary. Empty when no price was returned.",
+      "constraints": {
+       "minimum": 0,
+       "maximum": 100
+      }
+     },
+     {
+      "name": "verdict",
+      "type": "string",
+      "description": "The study's label for the hotel. PARITY: no listing more than 5% below the going rate. UNVERIFIED_LOWER: the cheapest listing is more than 5% below the going rate and its room is not shown to match. REAL_LOWER_MATCHED: the cheapest listing names a room, is more than 5% below the going rate, and its first-listed room name matches the first-listed room name of a listing priced within 2% of the going rate, by the study's room-name rules. A name match is evidence, not proof, of the same room. Empty when no price was returned.",
+      "constraints": {
+       "enum": [
+        "PARITY",
+        "UNVERIFIED_LOWER",
+        "REAL_LOWER_MATCHED"
+       ]
+      }
+     },
+     {
+      "name": "cheaper_room_name_matched",
+      "type": "boolean",
+      "description": "yes when verdict is REAL_LOWER_MATCHED (the study page calls this the original room check; the stricter check introduced October 1, 2026 is not in these files). 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "cheapest_named_a_room",
+      "type": "boolean",
+      "description": "yes when the cheapest listing names at least one room type, whatever its price. 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "fees_unverified",
+      "type": "boolean",
+      "description": "yes when no listing for this hotel reported a before-tax rate, so every price for it is the rate as listed and fees such as resort or property fees may be missing from all of them. 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "check_in",
+      "type": "date",
+      "description": "Check-in date searched (2 adults, 2 nights).",
+      "format": "default",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "check_out",
+      "type": "date",
+      "description": "Check-out date searched.",
+      "format": "default",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "free_cancellation_elsewhere_same_or_less",
+      "type": "boolean",
+      "description": "yes when, for at least one of Booking.com, Expedia, Hotels.com or Agoda (matched by name, so 'Expedia.ca' counts as Expedia), that site's lowest listing has no free cancellation and a listing from another site offers free cancellation at no more than 1.02 times that price. Compared on the nightly rate including taxes and fees as the sites reported them. Empty when no price was returned.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ]
+     }
+    ],
+    "missingValues": [
+     ""
+    ]
+   }
+  },
+  {
+   "name": "hotel-price-dispersion-2026-09-r4-new-cities",
+   "title": "Snapshot r4, September 29, 2026",
+   "description": "Snapshot r4: 25 more cities (first of two runs that day). Searched September 29, 2026 (UTC) for a 2-night stay 2026-11-03 to 2026-11-05 (35 days ahead), 2 adults, US market, US dollars. 406 hotels, one row each; 403 with a price.",
+   "path": "data/hotel-price-dispersion-2026-09-r4-new-cities.csv",
+   "profile": "tabular-data-resource",
+   "format": "csv",
+   "mediatype": "text/csv",
+   "encoding": "utf-8",
+   "bytes": 55472,
+   "hash": "sha256:ec60646b7fca5a4a1e5ac629de833b825c3d0b26dc75ec8701bd65f2f84c0c13",
+   "dialect": {
+    "delimiter": ",",
+    "lineTerminator": "\r\n",
+    "quoteChar": "\"",
+    "doubleQuote": true,
+    "header": true
+   },
+   "schema": {
+    "fields": [
+     {
+      "name": "city",
+      "type": "string",
+      "description": "The market searched: Google Hotels was asked for 'hotels in <city>'. Two searches priced somewhere else and are labelled for what they priced: in r7, the search meant for Naples, Italy returned hotels in Naples, Florida (labelled 'Naples, Florida', region US); in r16, 'hotels in Hoi An' returned US East Coast beach hotels (kept under 'Hoi An', region US).",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "region",
+      "type": "string",
+      "description": "Study grouping, not a standard geography: US (United States); EU (Europe, including countries outside the European Union such as the UK, Norway, Switzerland and Iceland); AM (the Americas outside the US, including Canada, Latin America, the Caribbean and Puerto Rico); APAC (Asia-Pacific, which in this study also holds the Middle East, Istanbul, Cape Town and Marrakech).",
+      "constraints": {
+       "required": true,
+       "enum": [
+        "US",
+        "EU",
+        "AM",
+        "APAC"
+       ]
+      }
+     },
+     {
+      "name": "hotel",
+      "type": "string",
+      "description": "Property name as Google Hotels listed it. Only results Google Hotels typed as a hotel (not a vacation rental) were kept.",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "segment",
+      "type": "string",
+      "description": "'chain' when the hotel name matches a list of chain brand names fixed before the first run (Marriott, Hilton, Hyatt, IHG, Accor, Wyndham, Choice and others), otherwise 'independent'. A name rule: a chain hotel whose name carries no brand counts as independent.",
+      "constraints": {
+       "required": true,
+       "enum": [
+        "chain",
+        "independent"
+       ]
+      }
+     },
+     {
+      "name": "sites_listed",
+      "type": "integer",
+      "description": "Number of listing entries kept in the analysis for this hotel: the 12 lowest-priced entries, so never more than 12. A site that Google Hotels lists twice counts twice. The going rate and the cheapest price are computed from every entry, which for most hotels was more than 12. 0 when no price was returned.",
+      "constraints": {
+       "required": true,
+       "minimum": 0,
+       "maximum": 12
+      }
+     },
+     {
+      "name": "going_rate_usd",
+      "type": "integer",
+      "description": "The going rate, US dollars a night: the nightly price shared by the largest number of listings that offer free cancellation or name a room (all listings when none do), ties broken toward the lower price. Each listing's price is its before-tax nightly rate when the site reported one, otherwise the nightly rate it listed (which may include taxes and fees). Empty when no price was returned.",
+      "constraints": {
+       "minimum": 1
+      }
+     },
+     {
+      "name": "cheapest_usd",
+      "type": "integer",
+      "description": "The lowest nightly price among all listings for the hotel, US dollars, on the same basis as going_rate_usd. Empty when no price was returned.",
+      "constraints": {
+       "minimum": 1
+      }
+     },
+     {
+      "name": "cheapest_site",
+      "type": "string",
+      "description": "The site with the lowest price, as Google Hotels names it (for example 'Booking.com', 'Expedia.ca', 'trivago DEALS'). Ties keep Google Hotels' order. Empty when no price was returned."
+     },
+     {
+      "name": "discount_pct",
+      "type": "number",
+      "description": "100 x (going_rate_usd - cheapest_usd) / going_rate_usd, rounded to one decimal. To apply a threshold, compute it from the two price columns: rounding moves a few rows across a boundary. Empty when no price was returned.",
+      "constraints": {
+       "minimum": 0,
+       "maximum": 100
+      }
+     },
+     {
+      "name": "verdict",
+      "type": "string",
+      "description": "The study's label for the hotel. PARITY: no listing more than 5% below the going rate. UNVERIFIED_LOWER: the cheapest listing is more than 5% below the going rate and its room is not shown to match. REAL_LOWER_MATCHED: the cheapest listing names a room, is more than 5% below the going rate, and its first-listed room name matches the first-listed room name of a listing priced within 2% of the going rate, by the study's room-name rules. A name match is evidence, not proof, of the same room. Empty when no price was returned.",
+      "constraints": {
+       "enum": [
+        "PARITY",
+        "UNVERIFIED_LOWER",
+        "REAL_LOWER_MATCHED"
+       ]
+      }
+     },
+     {
+      "name": "cheaper_room_name_matched",
+      "type": "boolean",
+      "description": "yes when verdict is REAL_LOWER_MATCHED (the study page calls this the original room check; the stricter check introduced October 1, 2026 is not in these files). 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "cheapest_named_a_room",
+      "type": "boolean",
+      "description": "yes when the cheapest listing names at least one room type, whatever its price. 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "fees_unverified",
+      "type": "boolean",
+      "description": "yes when no listing for this hotel reported a before-tax rate, so every price for it is the rate as listed and fees such as resort or property fees may be missing from all of them. 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "check_in",
+      "type": "date",
+      "description": "Check-in date searched (2 adults, 2 nights).",
+      "format": "default",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "check_out",
+      "type": "date",
+      "description": "Check-out date searched.",
+      "format": "default",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "free_cancellation_elsewhere_same_or_less",
+      "type": "boolean",
+      "description": "yes when, for at least one of Booking.com, Expedia, Hotels.com or Agoda (matched by name, so 'Expedia.ca' counts as Expedia), that site's lowest listing has no free cancellation and a listing from another site offers free cancellation at no more than 1.02 times that price. Compared on the nightly rate including taxes and fees as the sites reported them. Empty when no price was returned.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ]
+     }
+    ],
+    "missingValues": [
+     ""
+    ]
+   }
+  },
+  {
+   "name": "hotel-price-dispersion-2026-09-r5-new-cities",
+   "title": "Snapshot r5, September 29, 2026",
+   "description": "Snapshot r5: 25 more cities (second of two runs that day). Searched September 29, 2026 (UTC) for a 2-night stay 2026-11-03 to 2026-11-05 (35 days ahead), 2 adults, US market, US dollars. 420 hotels, one row each; 420 with a price.",
+   "path": "data/hotel-price-dispersion-2026-09-r5-new-cities.csv",
+   "profile": "tabular-data-resource",
+   "format": "csv",
+   "mediatype": "text/csv",
+   "encoding": "utf-8",
+   "bytes": 54473,
+   "hash": "sha256:58ff3f64c8d97768f9082c6c135063a539532c99cb15449ef27b31aa4a6a4045",
+   "dialect": {
+    "delimiter": ",",
+    "lineTerminator": "\r\n",
+    "quoteChar": "\"",
+    "doubleQuote": true,
+    "header": true
+   },
+   "schema": {
+    "fields": [
+     {
+      "name": "city",
+      "type": "string",
+      "description": "The market searched: Google Hotels was asked for 'hotels in <city>'. Two searches priced somewhere else and are labelled for what they priced: in r7, the search meant for Naples, Italy returned hotels in Naples, Florida (labelled 'Naples, Florida', region US); in r16, 'hotels in Hoi An' returned US East Coast beach hotels (kept under 'Hoi An', region US).",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "region",
+      "type": "string",
+      "description": "Study grouping, not a standard geography: US (United States); EU (Europe, including countries outside the European Union such as the UK, Norway, Switzerland and Iceland); AM (the Americas outside the US, including Canada, Latin America, the Caribbean and Puerto Rico); APAC (Asia-Pacific, which in this study also holds the Middle East, Istanbul, Cape Town and Marrakech).",
+      "constraints": {
+       "required": true,
+       "enum": [
+        "US",
+        "EU",
+        "AM",
+        "APAC"
+       ]
+      }
+     },
+     {
+      "name": "hotel",
+      "type": "string",
+      "description": "Property name as Google Hotels listed it. Only results Google Hotels typed as a hotel (not a vacation rental) were kept.",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "segment",
+      "type": "string",
+      "description": "'chain' when the hotel name matches a list of chain brand names fixed before the first run (Marriott, Hilton, Hyatt, IHG, Accor, Wyndham, Choice and others), otherwise 'independent'. A name rule: a chain hotel whose name carries no brand counts as independent.",
+      "constraints": {
+       "required": true,
+       "enum": [
+        "chain",
+        "independent"
+       ]
+      }
+     },
+     {
+      "name": "sites_listed",
+      "type": "integer",
+      "description": "Number of listing entries kept in the analysis for this hotel: the 12 lowest-priced entries, so never more than 12. A site that Google Hotels lists twice counts twice. The going rate and the cheapest price are computed from every entry, which for most hotels was more than 12. 0 when no price was returned.",
+      "constraints": {
+       "required": true,
+       "minimum": 0,
+       "maximum": 12
+      }
+     },
+     {
+      "name": "going_rate_usd",
+      "type": "integer",
+      "description": "The going rate, US dollars a night: the nightly price shared by the largest number of listings that offer free cancellation or name a room (all listings when none do), ties broken toward the lower price. Each listing's price is its before-tax nightly rate when the site reported one, otherwise the nightly rate it listed (which may include taxes and fees). Empty when no price was returned.",
+      "constraints": {
+       "minimum": 1
+      }
+     },
+     {
+      "name": "cheapest_usd",
+      "type": "integer",
+      "description": "The lowest nightly price among all listings for the hotel, US dollars, on the same basis as going_rate_usd. Empty when no price was returned.",
+      "constraints": {
+       "minimum": 1
+      }
+     },
+     {
+      "name": "cheapest_site",
+      "type": "string",
+      "description": "The site with the lowest price, as Google Hotels names it (for example 'Booking.com', 'Expedia.ca', 'trivago DEALS'). Ties keep Google Hotels' order. Empty when no price was returned."
+     },
+     {
+      "name": "discount_pct",
+      "type": "number",
+      "description": "100 x (going_rate_usd - cheapest_usd) / going_rate_usd, rounded to one decimal. To apply a threshold, compute it from the two price columns: rounding moves a few rows across a boundary. Empty when no price was returned.",
+      "constraints": {
+       "minimum": 0,
+       "maximum": 100
+      }
+     },
+     {
+      "name": "verdict",
+      "type": "string",
+      "description": "The study's label for the hotel. PARITY: no listing more than 5% below the going rate. UNVERIFIED_LOWER: the cheapest listing is more than 5% below the going rate and its room is not shown to match. REAL_LOWER_MATCHED: the cheapest listing names a room, is more than 5% below the going rate, and its first-listed room name matches the first-listed room name of a listing priced within 2% of the going rate, by the study's room-name rules. A name match is evidence, not proof, of the same room. Empty when no price was returned.",
+      "constraints": {
+       "enum": [
+        "PARITY",
+        "UNVERIFIED_LOWER",
+        "REAL_LOWER_MATCHED"
+       ]
+      }
+     },
+     {
+      "name": "cheaper_room_name_matched",
+      "type": "boolean",
+      "description": "yes when verdict is REAL_LOWER_MATCHED (the study page calls this the original room check; the stricter check introduced October 1, 2026 is not in these files). 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "cheapest_named_a_room",
+      "type": "boolean",
+      "description": "yes when the cheapest listing names at least one room type, whatever its price. 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "fees_unverified",
+      "type": "boolean",
+      "description": "yes when no listing for this hotel reported a before-tax rate, so every price for it is the rate as listed and fees such as resort or property fees may be missing from all of them. 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "check_in",
+      "type": "date",
+      "description": "Check-in date searched (2 adults, 2 nights).",
+      "format": "default",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "check_out",
+      "type": "date",
+      "description": "Check-out date searched.",
+      "format": "default",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "free_cancellation_elsewhere_same_or_less",
+      "type": "boolean",
+      "description": "yes when, for at least one of Booking.com, Expedia, Hotels.com or Agoda (matched by name, so 'Expedia.ca' counts as Expedia), that site's lowest listing has no free cancellation and a listing from another site offers free cancellation at no more than 1.02 times that price. Compared on the nightly rate including taxes and fees as the sites reported them. Empty when no price was returned.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ]
+     }
+    ],
+    "missingValues": [
+     ""
+    ]
+   }
+  },
+  {
+   "name": "hotel-price-dispersion-2026-09-r6-us-leisure",
+   "title": "Snapshot r6, September 29, 2026",
+   "description": "Snapshot r6: 25 US leisure destinations. Searched September 29, 2026 (UTC) for a 2-night stay 2026-11-03 to 2026-11-05 (35 days ahead), 2 adults, US market, US dollars. 420 hotels, one row each; 409 with a price.",
+   "path": "data/hotel-price-dispersion-2026-09-r6-us-leisure.csv",
+   "profile": "tabular-data-resource",
+   "format": "csv",
+   "mediatype": "text/csv",
+   "encoding": "utf-8",
+   "bytes": 54941,
+   "hash": "sha256:69659ae67a0082a3084ccb01bd192ddf47e7d5a0ad342f5df2453f9059a49b67",
+   "dialect": {
+    "delimiter": ",",
+    "lineTerminator": "\r\n",
+    "quoteChar": "\"",
+    "doubleQuote": true,
+    "header": true
+   },
+   "schema": {
+    "fields": [
+     {
+      "name": "city",
+      "type": "string",
+      "description": "The market searched: Google Hotels was asked for 'hotels in <city>'. Two searches priced somewhere else and are labelled for what they priced: in r7, the search meant for Naples, Italy returned hotels in Naples, Florida (labelled 'Naples, Florida', region US); in r16, 'hotels in Hoi An' returned US East Coast beach hotels (kept under 'Hoi An', region US).",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "region",
+      "type": "string",
+      "description": "Study grouping, not a standard geography: US (United States); EU (Europe, including countries outside the European Union such as the UK, Norway, Switzerland and Iceland); AM (the Americas outside the US, including Canada, Latin America, the Caribbean and Puerto Rico); APAC (Asia-Pacific, which in this study also holds the Middle East, Istanbul, Cape Town and Marrakech).",
+      "constraints": {
+       "required": true,
+       "enum": [
+        "US",
+        "EU",
+        "AM",
+        "APAC"
+       ]
+      }
+     },
+     {
+      "name": "hotel",
+      "type": "string",
+      "description": "Property name as Google Hotels listed it. Only results Google Hotels typed as a hotel (not a vacation rental) were kept.",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "segment",
+      "type": "string",
+      "description": "'chain' when the hotel name matches a list of chain brand names fixed before the first run (Marriott, Hilton, Hyatt, IHG, Accor, Wyndham, Choice and others), otherwise 'independent'. A name rule: a chain hotel whose name carries no brand counts as independent.",
+      "constraints": {
+       "required": true,
+       "enum": [
+        "chain",
+        "independent"
+       ]
+      }
+     },
+     {
+      "name": "sites_listed",
+      "type": "integer",
+      "description": "Number of listing entries kept in the analysis for this hotel: the 12 lowest-priced entries, so never more than 12. A site that Google Hotels lists twice counts twice. The going rate and the cheapest price are computed from every entry, which for most hotels was more than 12. 0 when no price was returned.",
+      "constraints": {
+       "required": true,
+       "minimum": 0,
+       "maximum": 12
+      }
+     },
+     {
+      "name": "going_rate_usd",
+      "type": "integer",
+      "description": "The going rate, US dollars a night: the nightly price shared by the largest number of listings that offer free cancellation or name a room (all listings when none do), ties broken toward the lower price. Each listing's price is its before-tax nightly rate when the site reported one, otherwise the nightly rate it listed (which may include taxes and fees). Empty when no price was returned.",
+      "constraints": {
+       "minimum": 1
+      }
+     },
+     {
+      "name": "cheapest_usd",
+      "type": "integer",
+      "description": "The lowest nightly price among all listings for the hotel, US dollars, on the same basis as going_rate_usd. Empty when no price was returned.",
+      "constraints": {
+       "minimum": 1
+      }
+     },
+     {
+      "name": "cheapest_site",
+      "type": "string",
+      "description": "The site with the lowest price, as Google Hotels names it (for example 'Booking.com', 'Expedia.ca', 'trivago DEALS'). Ties keep Google Hotels' order. Empty when no price was returned."
+     },
+     {
+      "name": "discount_pct",
+      "type": "number",
+      "description": "100 x (going_rate_usd - cheapest_usd) / going_rate_usd, rounded to one decimal. To apply a threshold, compute it from the two price columns: rounding moves a few rows across a boundary. Empty when no price was returned.",
+      "constraints": {
+       "minimum": 0,
+       "maximum": 100
+      }
+     },
+     {
+      "name": "verdict",
+      "type": "string",
+      "description": "The study's label for the hotel. PARITY: no listing more than 5% below the going rate. UNVERIFIED_LOWER: the cheapest listing is more than 5% below the going rate and its room is not shown to match. REAL_LOWER_MATCHED: the cheapest listing names a room, is more than 5% below the going rate, and its first-listed room name matches the first-listed room name of a listing priced within 2% of the going rate, by the study's room-name rules. A name match is evidence, not proof, of the same room. Empty when no price was returned.",
+      "constraints": {
+       "enum": [
+        "PARITY",
+        "UNVERIFIED_LOWER",
+        "REAL_LOWER_MATCHED"
+       ]
+      }
+     },
+     {
+      "name": "cheaper_room_name_matched",
+      "type": "boolean",
+      "description": "yes when verdict is REAL_LOWER_MATCHED (the study page calls this the original room check; the stricter check introduced October 1, 2026 is not in these files). 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "cheapest_named_a_room",
+      "type": "boolean",
+      "description": "yes when the cheapest listing names at least one room type, whatever its price. 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "fees_unverified",
+      "type": "boolean",
+      "description": "yes when no listing for this hotel reported a before-tax rate, so every price for it is the rate as listed and fees such as resort or property fees may be missing from all of them. 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "check_in",
+      "type": "date",
+      "description": "Check-in date searched (2 adults, 2 nights).",
+      "format": "default",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "check_out",
+      "type": "date",
+      "description": "Check-out date searched.",
+      "format": "default",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "free_cancellation_elsewhere_same_or_less",
+      "type": "boolean",
+      "description": "yes when, for at least one of Booking.com, Expedia, Hotels.com or Agoda (matched by name, so 'Expedia.ca' counts as Expedia), that site's lowest listing has no free cancellation and a listing from another site offers free cancellation at no more than 1.02 times that price. Compared on the nightly rate including taxes and fees as the sites reported them. Empty when no price was returned.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ]
+     }
+    ],
+    "missingValues": [
+     ""
+    ]
+   }
+  },
+  {
+   "name": "hotel-price-dispersion-2026-09-r7-intl-leisure",
+   "title": "Snapshot r7, September 29, 2026",
+   "description": "Snapshot r7: 25 international leisure destinations (one search returned Naples, Florida). Searched September 29, 2026 (UTC) for a 2-night stay 2026-11-03 to 2026-11-05 (35 days ahead), 2 adults, US market, US dollars. 418 hotels, one row each; 408 with a price.",
+   "path": "data/hotel-price-dispersion-2026-09-r7-intl-leisure.csv",
+   "profile": "tabular-data-resource",
+   "format": "csv",
+   "mediatype": "text/csv",
+   "encoding": "utf-8",
+   "bytes": 52526,
+   "hash": "sha256:50931184f2c055fea63331bfffde26c8170fd414f596f1f10fac3eb1f70d5c5d",
+   "dialect": {
+    "delimiter": ",",
+    "lineTerminator": "\r\n",
+    "quoteChar": "\"",
+    "doubleQuote": true,
+    "header": true
+   },
+   "schema": {
+    "fields": [
+     {
+      "name": "city",
+      "type": "string",
+      "description": "The market searched: Google Hotels was asked for 'hotels in <city>'. Two searches priced somewhere else and are labelled for what they priced: in r7, the search meant for Naples, Italy returned hotels in Naples, Florida (labelled 'Naples, Florida', region US); in r16, 'hotels in Hoi An' returned US East Coast beach hotels (kept under 'Hoi An', region US).",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "region",
+      "type": "string",
+      "description": "Study grouping, not a standard geography: US (United States); EU (Europe, including countries outside the European Union such as the UK, Norway, Switzerland and Iceland); AM (the Americas outside the US, including Canada, Latin America, the Caribbean and Puerto Rico); APAC (Asia-Pacific, which in this study also holds the Middle East, Istanbul, Cape Town and Marrakech).",
+      "constraints": {
+       "required": true,
+       "enum": [
+        "US",
+        "EU",
+        "AM",
+        "APAC"
+       ]
+      }
+     },
+     {
+      "name": "hotel",
+      "type": "string",
+      "description": "Property name as Google Hotels listed it. Only results Google Hotels typed as a hotel (not a vacation rental) were kept.",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "segment",
+      "type": "string",
+      "description": "'chain' when the hotel name matches a list of chain brand names fixed before the first run (Marriott, Hilton, Hyatt, IHG, Accor, Wyndham, Choice and others), otherwise 'independent'. A name rule: a chain hotel whose name carries no brand counts as independent.",
+      "constraints": {
+       "required": true,
+       "enum": [
+        "chain",
+        "independent"
+       ]
+      }
+     },
+     {
+      "name": "sites_listed",
+      "type": "integer",
+      "description": "Number of listing entries kept in the analysis for this hotel: the 12 lowest-priced entries, so never more than 12. A site that Google Hotels lists twice counts twice. The going rate and the cheapest price are computed from every entry, which for most hotels was more than 12. 0 when no price was returned.",
+      "constraints": {
+       "required": true,
+       "minimum": 0,
+       "maximum": 12
+      }
+     },
+     {
+      "name": "going_rate_usd",
+      "type": "integer",
+      "description": "The going rate, US dollars a night: the nightly price shared by the largest number of listings that offer free cancellation or name a room (all listings when none do), ties broken toward the lower price. Each listing's price is its before-tax nightly rate when the site reported one, otherwise the nightly rate it listed (which may include taxes and fees). Empty when no price was returned.",
+      "constraints": {
+       "minimum": 1
+      }
+     },
+     {
+      "name": "cheapest_usd",
+      "type": "integer",
+      "description": "The lowest nightly price among all listings for the hotel, US dollars, on the same basis as going_rate_usd. Empty when no price was returned.",
+      "constraints": {
+       "minimum": 1
+      }
+     },
+     {
+      "name": "cheapest_site",
+      "type": "string",
+      "description": "The site with the lowest price, as Google Hotels names it (for example 'Booking.com', 'Expedia.ca', 'trivago DEALS'). Ties keep Google Hotels' order. Empty when no price was returned."
+     },
+     {
+      "name": "discount_pct",
+      "type": "number",
+      "description": "100 x (going_rate_usd - cheapest_usd) / going_rate_usd, rounded to one decimal. To apply a threshold, compute it from the two price columns: rounding moves a few rows across a boundary. Empty when no price was returned.",
+      "constraints": {
+       "minimum": 0,
+       "maximum": 100
+      }
+     },
+     {
+      "name": "verdict",
+      "type": "string",
+      "description": "The study's label for the hotel. PARITY: no listing more than 5% below the going rate. UNVERIFIED_LOWER: the cheapest listing is more than 5% below the going rate and its room is not shown to match. REAL_LOWER_MATCHED: the cheapest listing names a room, is more than 5% below the going rate, and its first-listed room name matches the first-listed room name of a listing priced within 2% of the going rate, by the study's room-name rules. A name match is evidence, not proof, of the same room. Empty when no price was returned.",
+      "constraints": {
+       "enum": [
+        "PARITY",
+        "UNVERIFIED_LOWER",
+        "REAL_LOWER_MATCHED"
+       ]
+      }
+     },
+     {
+      "name": "cheaper_room_name_matched",
+      "type": "boolean",
+      "description": "yes when verdict is REAL_LOWER_MATCHED (the study page calls this the original room check; the stricter check introduced October 1, 2026 is not in these files). 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "cheapest_named_a_room",
+      "type": "boolean",
+      "description": "yes when the cheapest listing names at least one room type, whatever its price. 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "fees_unverified",
+      "type": "boolean",
+      "description": "yes when no listing for this hotel reported a before-tax rate, so every price for it is the rate as listed and fees such as resort or property fees may be missing from all of them. 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "check_in",
+      "type": "date",
+      "description": "Check-in date searched (2 adults, 2 nights).",
+      "format": "default",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "check_out",
+      "type": "date",
+      "description": "Check-out date searched.",
+      "format": "default",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "free_cancellation_elsewhere_same_or_less",
+      "type": "boolean",
+      "description": "yes when, for at least one of Booking.com, Expedia, Hotels.com or Agoda (matched by name, so 'Expedia.ca' counts as Expedia), that site's lowest listing has no free cancellation and a listing from another site offers free cancellation at no more than 1.02 times that price. Compared on the nightly rate including taxes and fees as the sites reported them. Empty when no price was returned.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ]
+     }
+    ],
+    "missingValues": [
+     ""
+    ]
+   }
+  },
+  {
+   "name": "hotel-price-dispersion-2026-09-r9-us-metros",
+   "title": "Snapshot r9, September 29, 2026",
+   "description": "Snapshot r9: 24 smaller US metros. Searched September 29, 2026 (UTC) for a 2-night stay 2026-11-03 to 2026-11-05 (35 days ahead), 2 adults, US market, US dollars. 399 hotels, one row each; 397 with a price.",
+   "path": "data/hotel-price-dispersion-2026-09-r9-us-metros.csv",
+   "profile": "tabular-data-resource",
+   "format": "csv",
+   "mediatype": "text/csv",
+   "encoding": "utf-8",
+   "bytes": 54977,
+   "hash": "sha256:de6ec7cf5602012d51a9372da4f244def5d402890764eb01916686d171ae4384",
+   "dialect": {
+    "delimiter": ",",
+    "lineTerminator": "\r\n",
+    "quoteChar": "\"",
+    "doubleQuote": true,
+    "header": true
+   },
+   "schema": {
+    "fields": [
+     {
+      "name": "city",
+      "type": "string",
+      "description": "The market searched: Google Hotels was asked for 'hotels in <city>'. Two searches priced somewhere else and are labelled for what they priced: in r7, the search meant for Naples, Italy returned hotels in Naples, Florida (labelled 'Naples, Florida', region US); in r16, 'hotels in Hoi An' returned US East Coast beach hotels (kept under 'Hoi An', region US).",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "region",
+      "type": "string",
+      "description": "Study grouping, not a standard geography: US (United States); EU (Europe, including countries outside the European Union such as the UK, Norway, Switzerland and Iceland); AM (the Americas outside the US, including Canada, Latin America, the Caribbean and Puerto Rico); APAC (Asia-Pacific, which in this study also holds the Middle East, Istanbul, Cape Town and Marrakech).",
+      "constraints": {
+       "required": true,
+       "enum": [
+        "US",
+        "EU",
+        "AM",
+        "APAC"
+       ]
+      }
+     },
+     {
+      "name": "hotel",
+      "type": "string",
+      "description": "Property name as Google Hotels listed it. Only results Google Hotels typed as a hotel (not a vacation rental) were kept.",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "segment",
+      "type": "string",
+      "description": "'chain' when the hotel name matches a list of chain brand names fixed before the first run (Marriott, Hilton, Hyatt, IHG, Accor, Wyndham, Choice and others), otherwise 'independent'. A name rule: a chain hotel whose name carries no brand counts as independent.",
+      "constraints": {
+       "required": true,
+       "enum": [
+        "chain",
+        "independent"
+       ]
+      }
+     },
+     {
+      "name": "sites_listed",
+      "type": "integer",
+      "description": "Number of listing entries kept in the analysis for this hotel: the 12 lowest-priced entries, so never more than 12. A site that Google Hotels lists twice counts twice. The going rate and the cheapest price are computed from every entry, which for most hotels was more than 12. 0 when no price was returned.",
+      "constraints": {
+       "required": true,
+       "minimum": 0,
+       "maximum": 12
+      }
+     },
+     {
+      "name": "going_rate_usd",
+      "type": "integer",
+      "description": "The going rate, US dollars a night: the nightly price shared by the largest number of listings that offer free cancellation or name a room (all listings when none do), ties broken toward the lower price. Each listing's price is its before-tax nightly rate when the site reported one, otherwise the nightly rate it listed (which may include taxes and fees). Empty when no price was returned.",
+      "constraints": {
+       "minimum": 1
+      }
+     },
+     {
+      "name": "cheapest_usd",
+      "type": "integer",
+      "description": "The lowest nightly price among all listings for the hotel, US dollars, on the same basis as going_rate_usd. Empty when no price was returned.",
+      "constraints": {
+       "minimum": 1
+      }
+     },
+     {
+      "name": "cheapest_site",
+      "type": "string",
+      "description": "The site with the lowest price, as Google Hotels names it (for example 'Booking.com', 'Expedia.ca', 'trivago DEALS'). Ties keep Google Hotels' order. Empty when no price was returned."
+     },
+     {
+      "name": "discount_pct",
+      "type": "number",
+      "description": "100 x (going_rate_usd - cheapest_usd) / going_rate_usd, rounded to one decimal. To apply a threshold, compute it from the two price columns: rounding moves a few rows across a boundary. Empty when no price was returned.",
+      "constraints": {
+       "minimum": 0,
+       "maximum": 100
+      }
+     },
+     {
+      "name": "verdict",
+      "type": "string",
+      "description": "The study's label for the hotel. PARITY: no listing more than 5% below the going rate. UNVERIFIED_LOWER: the cheapest listing is more than 5% below the going rate and its room is not shown to match. REAL_LOWER_MATCHED: the cheapest listing names a room, is more than 5% below the going rate, and its first-listed room name matches the first-listed room name of a listing priced within 2% of the going rate, by the study's room-name rules. A name match is evidence, not proof, of the same room. Empty when no price was returned.",
+      "constraints": {
+       "enum": [
+        "PARITY",
+        "UNVERIFIED_LOWER",
+        "REAL_LOWER_MATCHED"
+       ]
+      }
+     },
+     {
+      "name": "cheaper_room_name_matched",
+      "type": "boolean",
+      "description": "yes when verdict is REAL_LOWER_MATCHED (the study page calls this the original room check; the stricter check introduced October 1, 2026 is not in these files). 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "cheapest_named_a_room",
+      "type": "boolean",
+      "description": "yes when the cheapest listing names at least one room type, whatever its price. 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "fees_unverified",
+      "type": "boolean",
+      "description": "yes when no listing for this hotel reported a before-tax rate, so every price for it is the rate as listed and fees such as resort or property fees may be missing from all of them. 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "check_in",
+      "type": "date",
+      "description": "Check-in date searched (2 adults, 2 nights).",
+      "format": "default",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "check_out",
+      "type": "date",
+      "description": "Check-out date searched.",
+      "format": "default",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "free_cancellation_elsewhere_same_or_less",
+      "type": "boolean",
+      "description": "yes when, for at least one of Booking.com, Expedia, Hotels.com or Agoda (matched by name, so 'Expedia.ca' counts as Expedia), that site's lowest listing has no free cancellation and a listing from another site offers free cancellation at no more than 1.02 times that price. Compared on the nightly rate including taxes and fees as the sites reported them. Empty when no price was returned.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ]
+     }
+    ],
+    "missingValues": [
+     ""
+    ]
+   }
+  },
+  {
+   "name": "hotel-price-dispersion-2026-09-r10-intl-cities",
+   "title": "Snapshot r10, September 29, 2026",
+   "description": "Snapshot r10: 25 international cities. Searched September 29, 2026 (UTC) for a 2-night stay 2026-11-03 to 2026-11-05 (35 days ahead), 2 adults, US market, US dollars. 437 hotels, one row each; 431 with a price.",
+   "path": "data/hotel-price-dispersion-2026-09-r10-intl-cities.csv",
+   "profile": "tabular-data-resource",
+   "format": "csv",
+   "mediatype": "text/csv",
+   "encoding": "utf-8",
+   "bytes": 56336,
+   "hash": "sha256:3af6437d488084a3f6fbe12fcf1c41b1f5b1ff6a6d1f99bbb8c8698af005ec35",
+   "dialect": {
+    "delimiter": ",",
+    "lineTerminator": "\r\n",
+    "quoteChar": "\"",
+    "doubleQuote": true,
+    "header": true
+   },
+   "schema": {
+    "fields": [
+     {
+      "name": "city",
+      "type": "string",
+      "description": "The market searched: Google Hotels was asked for 'hotels in <city>'. Two searches priced somewhere else and are labelled for what they priced: in r7, the search meant for Naples, Italy returned hotels in Naples, Florida (labelled 'Naples, Florida', region US); in r16, 'hotels in Hoi An' returned US East Coast beach hotels (kept under 'Hoi An', region US).",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "region",
+      "type": "string",
+      "description": "Study grouping, not a standard geography: US (United States); EU (Europe, including countries outside the European Union such as the UK, Norway, Switzerland and Iceland); AM (the Americas outside the US, including Canada, Latin America, the Caribbean and Puerto Rico); APAC (Asia-Pacific, which in this study also holds the Middle East, Istanbul, Cape Town and Marrakech).",
+      "constraints": {
+       "required": true,
+       "enum": [
+        "US",
+        "EU",
+        "AM",
+        "APAC"
+       ]
+      }
+     },
+     {
+      "name": "hotel",
+      "type": "string",
+      "description": "Property name as Google Hotels listed it. Only results Google Hotels typed as a hotel (not a vacation rental) were kept.",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "segment",
+      "type": "string",
+      "description": "'chain' when the hotel name matches a list of chain brand names fixed before the first run (Marriott, Hilton, Hyatt, IHG, Accor, Wyndham, Choice and others), otherwise 'independent'. A name rule: a chain hotel whose name carries no brand counts as independent.",
+      "constraints": {
+       "required": true,
+       "enum": [
+        "chain",
+        "independent"
+       ]
+      }
+     },
+     {
+      "name": "sites_listed",
+      "type": "integer",
+      "description": "Number of listing entries kept in the analysis for this hotel: the 12 lowest-priced entries, so never more than 12. A site that Google Hotels lists twice counts twice. The going rate and the cheapest price are computed from every entry, which for most hotels was more than 12. 0 when no price was returned.",
+      "constraints": {
+       "required": true,
+       "minimum": 0,
+       "maximum": 12
+      }
+     },
+     {
+      "name": "going_rate_usd",
+      "type": "integer",
+      "description": "The going rate, US dollars a night: the nightly price shared by the largest number of listings that offer free cancellation or name a room (all listings when none do), ties broken toward the lower price. Each listing's price is its before-tax nightly rate when the site reported one, otherwise the nightly rate it listed (which may include taxes and fees). Empty when no price was returned.",
+      "constraints": {
+       "minimum": 1
+      }
+     },
+     {
+      "name": "cheapest_usd",
+      "type": "integer",
+      "description": "The lowest nightly price among all listings for the hotel, US dollars, on the same basis as going_rate_usd. Empty when no price was returned.",
+      "constraints": {
+       "minimum": 1
+      }
+     },
+     {
+      "name": "cheapest_site",
+      "type": "string",
+      "description": "The site with the lowest price, as Google Hotels names it (for example 'Booking.com', 'Expedia.ca', 'trivago DEALS'). Ties keep Google Hotels' order. Empty when no price was returned."
+     },
+     {
+      "name": "discount_pct",
+      "type": "number",
+      "description": "100 x (going_rate_usd - cheapest_usd) / going_rate_usd, rounded to one decimal. To apply a threshold, compute it from the two price columns: rounding moves a few rows across a boundary. Empty when no price was returned.",
+      "constraints": {
+       "minimum": 0,
+       "maximum": 100
+      }
+     },
+     {
+      "name": "verdict",
+      "type": "string",
+      "description": "The study's label for the hotel. PARITY: no listing more than 5% below the going rate. UNVERIFIED_LOWER: the cheapest listing is more than 5% below the going rate and its room is not shown to match. REAL_LOWER_MATCHED: the cheapest listing names a room, is more than 5% below the going rate, and its first-listed room name matches the first-listed room name of a listing priced within 2% of the going rate, by the study's room-name rules. A name match is evidence, not proof, of the same room. Empty when no price was returned.",
+      "constraints": {
+       "enum": [
+        "PARITY",
+        "UNVERIFIED_LOWER",
+        "REAL_LOWER_MATCHED"
+       ]
+      }
+     },
+     {
+      "name": "cheaper_room_name_matched",
+      "type": "boolean",
+      "description": "yes when verdict is REAL_LOWER_MATCHED (the study page calls this the original room check; the stricter check introduced October 1, 2026 is not in these files). 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "cheapest_named_a_room",
+      "type": "boolean",
+      "description": "yes when the cheapest listing names at least one room type, whatever its price. 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "fees_unverified",
+      "type": "boolean",
+      "description": "yes when no listing for this hotel reported a before-tax rate, so every price for it is the rate as listed and fees such as resort or property fees may be missing from all of them. 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "check_in",
+      "type": "date",
+      "description": "Check-in date searched (2 adults, 2 nights).",
+      "format": "default",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "check_out",
+      "type": "date",
+      "description": "Check-out date searched.",
+      "format": "default",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "free_cancellation_elsewhere_same_or_less",
+      "type": "boolean",
+      "description": "yes when, for at least one of Booking.com, Expedia, Hotels.com or Agoda (matched by name, so 'Expedia.ca' counts as Expedia), that site's lowest listing has no free cancellation and a listing from another site offers free cancellation at no more than 1.02 times that price. Compared on the nightly rate including taxes and fees as the sites reported them. Empty when no price was returned.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ]
+     }
+    ],
+    "missingValues": [
+     ""
+    ]
+   }
+  },
+  {
+   "name": "hotel-price-dispersion-2026-09-r11-us-cities",
+   "title": "Snapshot r11, September 30, 2026",
+   "description": "Snapshot r11: 25 US cities. Searched September 30, 2026 (UTC) for a 2-night stay 2026-11-04 to 2026-11-06 (35 days ahead), 2 adults, US market, US dollars. 423 hotels, one row each; 421 with a price.",
+   "path": "data/hotel-price-dispersion-2026-09-r11-us-cities.csv",
+   "profile": "tabular-data-resource",
+   "format": "csv",
+   "mediatype": "text/csv",
+   "encoding": "utf-8",
+   "bytes": 56487,
+   "hash": "sha256:b8898eb871702b244a3e4405bd9899d333763a4a451173a26cc3dab53b8fb509",
+   "dialect": {
+    "delimiter": ",",
+    "lineTerminator": "\r\n",
+    "quoteChar": "\"",
+    "doubleQuote": true,
+    "header": true
+   },
+   "schema": {
+    "fields": [
+     {
+      "name": "city",
+      "type": "string",
+      "description": "The market searched: Google Hotels was asked for 'hotels in <city>'. Two searches priced somewhere else and are labelled for what they priced: in r7, the search meant for Naples, Italy returned hotels in Naples, Florida (labelled 'Naples, Florida', region US); in r16, 'hotels in Hoi An' returned US East Coast beach hotels (kept under 'Hoi An', region US).",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "region",
+      "type": "string",
+      "description": "Study grouping, not a standard geography: US (United States); EU (Europe, including countries outside the European Union such as the UK, Norway, Switzerland and Iceland); AM (the Americas outside the US, including Canada, Latin America, the Caribbean and Puerto Rico); APAC (Asia-Pacific, which in this study also holds the Middle East, Istanbul, Cape Town and Marrakech).",
+      "constraints": {
+       "required": true,
+       "enum": [
+        "US",
+        "EU",
+        "AM",
+        "APAC"
+       ]
+      }
+     },
+     {
+      "name": "hotel",
+      "type": "string",
+      "description": "Property name as Google Hotels listed it. Only results Google Hotels typed as a hotel (not a vacation rental) were kept.",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "segment",
+      "type": "string",
+      "description": "'chain' when the hotel name matches a list of chain brand names fixed before the first run (Marriott, Hilton, Hyatt, IHG, Accor, Wyndham, Choice and others), otherwise 'independent'. A name rule: a chain hotel whose name carries no brand counts as independent.",
+      "constraints": {
+       "required": true,
+       "enum": [
+        "chain",
+        "independent"
+       ]
+      }
+     },
+     {
+      "name": "sites_listed",
+      "type": "integer",
+      "description": "Number of listing entries kept in the analysis for this hotel: the 12 lowest-priced entries, so never more than 12. A site that Google Hotels lists twice counts twice. The going rate and the cheapest price are computed from every entry, which for most hotels was more than 12. 0 when no price was returned.",
+      "constraints": {
+       "required": true,
+       "minimum": 0,
+       "maximum": 12
+      }
+     },
+     {
+      "name": "going_rate_usd",
+      "type": "integer",
+      "description": "The going rate, US dollars a night: the nightly price shared by the largest number of listings that offer free cancellation or name a room (all listings when none do), ties broken toward the lower price. Each listing's price is its before-tax nightly rate when the site reported one, otherwise the nightly rate it listed (which may include taxes and fees). Empty when no price was returned.",
+      "constraints": {
+       "minimum": 1
+      }
+     },
+     {
+      "name": "cheapest_usd",
+      "type": "integer",
+      "description": "The lowest nightly price among all listings for the hotel, US dollars, on the same basis as going_rate_usd. Empty when no price was returned.",
+      "constraints": {
+       "minimum": 1
+      }
+     },
+     {
+      "name": "cheapest_site",
+      "type": "string",
+      "description": "The site with the lowest price, as Google Hotels names it (for example 'Booking.com', 'Expedia.ca', 'trivago DEALS'). Ties keep Google Hotels' order. Empty when no price was returned."
+     },
+     {
+      "name": "discount_pct",
+      "type": "number",
+      "description": "100 x (going_rate_usd - cheapest_usd) / going_rate_usd, rounded to one decimal. To apply a threshold, compute it from the two price columns: rounding moves a few rows across a boundary. Empty when no price was returned.",
+      "constraints": {
+       "minimum": 0,
+       "maximum": 100
+      }
+     },
+     {
+      "name": "verdict",
+      "type": "string",
+      "description": "The study's label for the hotel. PARITY: no listing more than 5% below the going rate. UNVERIFIED_LOWER: the cheapest listing is more than 5% below the going rate and its room is not shown to match. REAL_LOWER_MATCHED: the cheapest listing names a room, is more than 5% below the going rate, and its first-listed room name matches the first-listed room name of a listing priced within 2% of the going rate, by the study's room-name rules. A name match is evidence, not proof, of the same room. Empty when no price was returned.",
+      "constraints": {
+       "enum": [
+        "PARITY",
+        "UNVERIFIED_LOWER",
+        "REAL_LOWER_MATCHED"
+       ]
+      }
+     },
+     {
+      "name": "cheaper_room_name_matched",
+      "type": "boolean",
+      "description": "yes when verdict is REAL_LOWER_MATCHED (the study page calls this the original room check; the stricter check introduced October 1, 2026 is not in these files). 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "cheapest_named_a_room",
+      "type": "boolean",
+      "description": "yes when the cheapest listing names at least one room type, whatever its price. 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "fees_unverified",
+      "type": "boolean",
+      "description": "yes when no listing for this hotel reported a before-tax rate, so every price for it is the rate as listed and fees such as resort or property fees may be missing from all of them. 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "check_in",
+      "type": "date",
+      "description": "Check-in date searched (2 adults, 2 nights).",
+      "format": "default",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "check_out",
+      "type": "date",
+      "description": "Check-out date searched.",
+      "format": "default",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "free_cancellation_elsewhere_same_or_less",
+      "type": "boolean",
+      "description": "yes when, for at least one of Booking.com, Expedia, Hotels.com or Agoda (matched by name, so 'Expedia.ca' counts as Expedia), that site's lowest listing has no free cancellation and a listing from another site offers free cancellation at no more than 1.02 times that price. Compared on the nightly rate including taxes and fees as the sites reported them. Empty when no price was returned.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ]
+     }
+    ],
+    "missingValues": [
+     ""
+    ]
+   }
+  },
+  {
+   "name": "hotel-price-dispersion-2026-09-r12-intl-cities",
+   "title": "Snapshot r12, September 30, 2026",
+   "description": "Snapshot r12: 25 international cities. Searched September 30, 2026 (UTC) for a 2-night stay 2026-11-04 to 2026-11-06 (35 days ahead), 2 adults, US market, US dollars. 430 hotels, one row each; 427 with a price.",
+   "path": "data/hotel-price-dispersion-2026-09-r12-intl-cities.csv",
+   "profile": "tabular-data-resource",
+   "format": "csv",
+   "mediatype": "text/csv",
+   "encoding": "utf-8",
+   "bytes": 54638,
+   "hash": "sha256:9838866c1c7250ce184c17b755bb8c27ac4d239f2b8329e15e55f94a024c6fa2",
+   "dialect": {
+    "delimiter": ",",
+    "lineTerminator": "\r\n",
+    "quoteChar": "\"",
+    "doubleQuote": true,
+    "header": true
+   },
+   "schema": {
+    "fields": [
+     {
+      "name": "city",
+      "type": "string",
+      "description": "The market searched: Google Hotels was asked for 'hotels in <city>'. Two searches priced somewhere else and are labelled for what they priced: in r7, the search meant for Naples, Italy returned hotels in Naples, Florida (labelled 'Naples, Florida', region US); in r16, 'hotels in Hoi An' returned US East Coast beach hotels (kept under 'Hoi An', region US).",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "region",
+      "type": "string",
+      "description": "Study grouping, not a standard geography: US (United States); EU (Europe, including countries outside the European Union such as the UK, Norway, Switzerland and Iceland); AM (the Americas outside the US, including Canada, Latin America, the Caribbean and Puerto Rico); APAC (Asia-Pacific, which in this study also holds the Middle East, Istanbul, Cape Town and Marrakech).",
+      "constraints": {
+       "required": true,
+       "enum": [
+        "US",
+        "EU",
+        "AM",
+        "APAC"
+       ]
+      }
+     },
+     {
+      "name": "hotel",
+      "type": "string",
+      "description": "Property name as Google Hotels listed it. Only results Google Hotels typed as a hotel (not a vacation rental) were kept.",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "segment",
+      "type": "string",
+      "description": "'chain' when the hotel name matches a list of chain brand names fixed before the first run (Marriott, Hilton, Hyatt, IHG, Accor, Wyndham, Choice and others), otherwise 'independent'. A name rule: a chain hotel whose name carries no brand counts as independent.",
+      "constraints": {
+       "required": true,
+       "enum": [
+        "chain",
+        "independent"
+       ]
+      }
+     },
+     {
+      "name": "sites_listed",
+      "type": "integer",
+      "description": "Number of listing entries kept in the analysis for this hotel: the 12 lowest-priced entries, so never more than 12. A site that Google Hotels lists twice counts twice. The going rate and the cheapest price are computed from every entry, which for most hotels was more than 12. 0 when no price was returned.",
+      "constraints": {
+       "required": true,
+       "minimum": 0,
+       "maximum": 12
+      }
+     },
+     {
+      "name": "going_rate_usd",
+      "type": "integer",
+      "description": "The going rate, US dollars a night: the nightly price shared by the largest number of listings that offer free cancellation or name a room (all listings when none do), ties broken toward the lower price. Each listing's price is its before-tax nightly rate when the site reported one, otherwise the nightly rate it listed (which may include taxes and fees). Empty when no price was returned.",
+      "constraints": {
+       "minimum": 1
+      }
+     },
+     {
+      "name": "cheapest_usd",
+      "type": "integer",
+      "description": "The lowest nightly price among all listings for the hotel, US dollars, on the same basis as going_rate_usd. Empty when no price was returned.",
+      "constraints": {
+       "minimum": 1
+      }
+     },
+     {
+      "name": "cheapest_site",
+      "type": "string",
+      "description": "The site with the lowest price, as Google Hotels names it (for example 'Booking.com', 'Expedia.ca', 'trivago DEALS'). Ties keep Google Hotels' order. Empty when no price was returned."
+     },
+     {
+      "name": "discount_pct",
+      "type": "number",
+      "description": "100 x (going_rate_usd - cheapest_usd) / going_rate_usd, rounded to one decimal. To apply a threshold, compute it from the two price columns: rounding moves a few rows across a boundary. Empty when no price was returned.",
+      "constraints": {
+       "minimum": 0,
+       "maximum": 100
+      }
+     },
+     {
+      "name": "verdict",
+      "type": "string",
+      "description": "The study's label for the hotel. PARITY: no listing more than 5% below the going rate. UNVERIFIED_LOWER: the cheapest listing is more than 5% below the going rate and its room is not shown to match. REAL_LOWER_MATCHED: the cheapest listing names a room, is more than 5% below the going rate, and its first-listed room name matches the first-listed room name of a listing priced within 2% of the going rate, by the study's room-name rules. A name match is evidence, not proof, of the same room. Empty when no price was returned.",
+      "constraints": {
+       "enum": [
+        "PARITY",
+        "UNVERIFIED_LOWER",
+        "REAL_LOWER_MATCHED"
+       ]
+      }
+     },
+     {
+      "name": "cheaper_room_name_matched",
+      "type": "boolean",
+      "description": "yes when verdict is REAL_LOWER_MATCHED (the study page calls this the original room check; the stricter check introduced October 1, 2026 is not in these files). 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "cheapest_named_a_room",
+      "type": "boolean",
+      "description": "yes when the cheapest listing names at least one room type, whatever its price. 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "fees_unverified",
+      "type": "boolean",
+      "description": "yes when no listing for this hotel reported a before-tax rate, so every price for it is the rate as listed and fees such as resort or property fees may be missing from all of them. 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "check_in",
+      "type": "date",
+      "description": "Check-in date searched (2 adults, 2 nights).",
+      "format": "default",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "check_out",
+      "type": "date",
+      "description": "Check-out date searched.",
+      "format": "default",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "free_cancellation_elsewhere_same_or_less",
+      "type": "boolean",
+      "description": "yes when, for at least one of Booking.com, Expedia, Hotels.com or Agoda (matched by name, so 'Expedia.ca' counts as Expedia), that site's lowest listing has no free cancellation and a listing from another site offers free cancellation at no more than 1.02 times that price. Compared on the nightly rate including taxes and fees as the sites reported them. Empty when no price was returned.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ]
+     }
+    ],
+    "missingValues": [
+     ""
+    ]
+   }
+  },
+  {
+   "name": "hotel-price-dispersion-2026-09-r13-us-towns",
+   "title": "Snapshot r13, September 30, 2026",
+   "description": "Snapshot r13: 25 US towns. Searched September 30, 2026 (UTC) for a 2-night stay 2026-11-04 to 2026-11-06 (35 days ahead), 2 adults, US market, US dollars. 422 hotels, one row each; 398 with a price.",
+   "path": "data/hotel-price-dispersion-2026-09-r13-us-towns.csv",
+   "profile": "tabular-data-resource",
+   "format": "csv",
+   "mediatype": "text/csv",
+   "encoding": "utf-8",
+   "bytes": 57377,
+   "hash": "sha256:15d50e4672f9ff063e7ac4d884906e183ea6fb8c191c6e0c59f06e57bef548a4",
+   "dialect": {
+    "delimiter": ",",
+    "lineTerminator": "\r\n",
+    "quoteChar": "\"",
+    "doubleQuote": true,
+    "header": true
+   },
+   "schema": {
+    "fields": [
+     {
+      "name": "city",
+      "type": "string",
+      "description": "The market searched: Google Hotels was asked for 'hotels in <city>'. Two searches priced somewhere else and are labelled for what they priced: in r7, the search meant for Naples, Italy returned hotels in Naples, Florida (labelled 'Naples, Florida', region US); in r16, 'hotels in Hoi An' returned US East Coast beach hotels (kept under 'Hoi An', region US).",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "region",
+      "type": "string",
+      "description": "Study grouping, not a standard geography: US (United States); EU (Europe, including countries outside the European Union such as the UK, Norway, Switzerland and Iceland); AM (the Americas outside the US, including Canada, Latin America, the Caribbean and Puerto Rico); APAC (Asia-Pacific, which in this study also holds the Middle East, Istanbul, Cape Town and Marrakech).",
+      "constraints": {
+       "required": true,
+       "enum": [
+        "US",
+        "EU",
+        "AM",
+        "APAC"
+       ]
+      }
+     },
+     {
+      "name": "hotel",
+      "type": "string",
+      "description": "Property name as Google Hotels listed it. Only results Google Hotels typed as a hotel (not a vacation rental) were kept.",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "segment",
+      "type": "string",
+      "description": "'chain' when the hotel name matches a list of chain brand names fixed before the first run (Marriott, Hilton, Hyatt, IHG, Accor, Wyndham, Choice and others), otherwise 'independent'. A name rule: a chain hotel whose name carries no brand counts as independent.",
+      "constraints": {
+       "required": true,
+       "enum": [
+        "chain",
+        "independent"
+       ]
+      }
+     },
+     {
+      "name": "sites_listed",
+      "type": "integer",
+      "description": "Number of listing entries kept in the analysis for this hotel: the 12 lowest-priced entries, so never more than 12. A site that Google Hotels lists twice counts twice. The going rate and the cheapest price are computed from every entry, which for most hotels was more than 12. 0 when no price was returned.",
+      "constraints": {
+       "required": true,
+       "minimum": 0,
+       "maximum": 12
+      }
+     },
+     {
+      "name": "going_rate_usd",
+      "type": "integer",
+      "description": "The going rate, US dollars a night: the nightly price shared by the largest number of listings that offer free cancellation or name a room (all listings when none do), ties broken toward the lower price. Each listing's price is its before-tax nightly rate when the site reported one, otherwise the nightly rate it listed (which may include taxes and fees). Empty when no price was returned.",
+      "constraints": {
+       "minimum": 1
+      }
+     },
+     {
+      "name": "cheapest_usd",
+      "type": "integer",
+      "description": "The lowest nightly price among all listings for the hotel, US dollars, on the same basis as going_rate_usd. Empty when no price was returned.",
+      "constraints": {
+       "minimum": 1
+      }
+     },
+     {
+      "name": "cheapest_site",
+      "type": "string",
+      "description": "The site with the lowest price, as Google Hotels names it (for example 'Booking.com', 'Expedia.ca', 'trivago DEALS'). Ties keep Google Hotels' order. Empty when no price was returned."
+     },
+     {
+      "name": "discount_pct",
+      "type": "number",
+      "description": "100 x (going_rate_usd - cheapest_usd) / going_rate_usd, rounded to one decimal. To apply a threshold, compute it from the two price columns: rounding moves a few rows across a boundary. Empty when no price was returned.",
+      "constraints": {
+       "minimum": 0,
+       "maximum": 100
+      }
+     },
+     {
+      "name": "verdict",
+      "type": "string",
+      "description": "The study's label for the hotel. PARITY: no listing more than 5% below the going rate. UNVERIFIED_LOWER: the cheapest listing is more than 5% below the going rate and its room is not shown to match. REAL_LOWER_MATCHED: the cheapest listing names a room, is more than 5% below the going rate, and its first-listed room name matches the first-listed room name of a listing priced within 2% of the going rate, by the study's room-name rules. A name match is evidence, not proof, of the same room. Empty when no price was returned.",
+      "constraints": {
+       "enum": [
+        "PARITY",
+        "UNVERIFIED_LOWER",
+        "REAL_LOWER_MATCHED"
+       ]
+      }
+     },
+     {
+      "name": "cheaper_room_name_matched",
+      "type": "boolean",
+      "description": "yes when verdict is REAL_LOWER_MATCHED (the study page calls this the original room check; the stricter check introduced October 1, 2026 is not in these files). 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "cheapest_named_a_room",
+      "type": "boolean",
+      "description": "yes when the cheapest listing names at least one room type, whatever its price. 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "fees_unverified",
+      "type": "boolean",
+      "description": "yes when no listing for this hotel reported a before-tax rate, so every price for it is the rate as listed and fees such as resort or property fees may be missing from all of them. 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "check_in",
+      "type": "date",
+      "description": "Check-in date searched (2 adults, 2 nights).",
+      "format": "default",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "check_out",
+      "type": "date",
+      "description": "Check-out date searched.",
+      "format": "default",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "free_cancellation_elsewhere_same_or_less",
+      "type": "boolean",
+      "description": "yes when, for at least one of Booking.com, Expedia, Hotels.com or Agoda (matched by name, so 'Expedia.ca' counts as Expedia), that site's lowest listing has no free cancellation and a listing from another site offers free cancellation at no more than 1.02 times that price. Compared on the nightly rate including taxes and fees as the sites reported them. Empty when no price was returned.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ]
+     }
+    ],
+    "missingValues": [
+     ""
+    ]
+   }
+  },
+  {
+   "name": "hotel-price-dispersion-2026-09-r14-intl-cities",
+   "title": "Snapshot r14, September 30, 2026",
+   "description": "Snapshot r14: 25 international cities. Searched September 30, 2026 (UTC) for a 2-night stay 2026-11-04 to 2026-11-06 (35 days ahead), 2 adults, US market, US dollars. 422 hotels, one row each; 421 with a price.",
+   "path": "data/hotel-price-dispersion-2026-09-r14-intl-cities.csv",
+   "profile": "tabular-data-resource",
+   "format": "csv",
+   "mediatype": "text/csv",
+   "encoding": "utf-8",
+   "bytes": 53583,
+   "hash": "sha256:ea4393137fa49d37a2e7a8318692f313e6fa3d16dad75b506530972a1e309b32",
+   "dialect": {
+    "delimiter": ",",
+    "lineTerminator": "\r\n",
+    "quoteChar": "\"",
+    "doubleQuote": true,
+    "header": true
+   },
+   "schema": {
+    "fields": [
+     {
+      "name": "city",
+      "type": "string",
+      "description": "The market searched: Google Hotels was asked for 'hotels in <city>'. Two searches priced somewhere else and are labelled for what they priced: in r7, the search meant for Naples, Italy returned hotels in Naples, Florida (labelled 'Naples, Florida', region US); in r16, 'hotels in Hoi An' returned US East Coast beach hotels (kept under 'Hoi An', region US).",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "region",
+      "type": "string",
+      "description": "Study grouping, not a standard geography: US (United States); EU (Europe, including countries outside the European Union such as the UK, Norway, Switzerland and Iceland); AM (the Americas outside the US, including Canada, Latin America, the Caribbean and Puerto Rico); APAC (Asia-Pacific, which in this study also holds the Middle East, Istanbul, Cape Town and Marrakech).",
+      "constraints": {
+       "required": true,
+       "enum": [
+        "US",
+        "EU",
+        "AM",
+        "APAC"
+       ]
+      }
+     },
+     {
+      "name": "hotel",
+      "type": "string",
+      "description": "Property name as Google Hotels listed it. Only results Google Hotels typed as a hotel (not a vacation rental) were kept.",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "segment",
+      "type": "string",
+      "description": "'chain' when the hotel name matches a list of chain brand names fixed before the first run (Marriott, Hilton, Hyatt, IHG, Accor, Wyndham, Choice and others), otherwise 'independent'. A name rule: a chain hotel whose name carries no brand counts as independent.",
+      "constraints": {
+       "required": true,
+       "enum": [
+        "chain",
+        "independent"
+       ]
+      }
+     },
+     {
+      "name": "sites_listed",
+      "type": "integer",
+      "description": "Number of listing entries kept in the analysis for this hotel: the 12 lowest-priced entries, so never more than 12. A site that Google Hotels lists twice counts twice. The going rate and the cheapest price are computed from every entry, which for most hotels was more than 12. 0 when no price was returned.",
+      "constraints": {
+       "required": true,
+       "minimum": 0,
+       "maximum": 12
+      }
+     },
+     {
+      "name": "going_rate_usd",
+      "type": "integer",
+      "description": "The going rate, US dollars a night: the nightly price shared by the largest number of listings that offer free cancellation or name a room (all listings when none do), ties broken toward the lower price. Each listing's price is its before-tax nightly rate when the site reported one, otherwise the nightly rate it listed (which may include taxes and fees). Empty when no price was returned.",
+      "constraints": {
+       "minimum": 1
+      }
+     },
+     {
+      "name": "cheapest_usd",
+      "type": "integer",
+      "description": "The lowest nightly price among all listings for the hotel, US dollars, on the same basis as going_rate_usd. Empty when no price was returned.",
+      "constraints": {
+       "minimum": 1
+      }
+     },
+     {
+      "name": "cheapest_site",
+      "type": "string",
+      "description": "The site with the lowest price, as Google Hotels names it (for example 'Booking.com', 'Expedia.ca', 'trivago DEALS'). Ties keep Google Hotels' order. Empty when no price was returned."
+     },
+     {
+      "name": "discount_pct",
+      "type": "number",
+      "description": "100 x (going_rate_usd - cheapest_usd) / going_rate_usd, rounded to one decimal. To apply a threshold, compute it from the two price columns: rounding moves a few rows across a boundary. Empty when no price was returned.",
+      "constraints": {
+       "minimum": 0,
+       "maximum": 100
+      }
+     },
+     {
+      "name": "verdict",
+      "type": "string",
+      "description": "The study's label for the hotel. PARITY: no listing more than 5% below the going rate. UNVERIFIED_LOWER: the cheapest listing is more than 5% below the going rate and its room is not shown to match. REAL_LOWER_MATCHED: the cheapest listing names a room, is more than 5% below the going rate, and its first-listed room name matches the first-listed room name of a listing priced within 2% of the going rate, by the study's room-name rules. A name match is evidence, not proof, of the same room. Empty when no price was returned.",
+      "constraints": {
+       "enum": [
+        "PARITY",
+        "UNVERIFIED_LOWER",
+        "REAL_LOWER_MATCHED"
+       ]
+      }
+     },
+     {
+      "name": "cheaper_room_name_matched",
+      "type": "boolean",
+      "description": "yes when verdict is REAL_LOWER_MATCHED (the study page calls this the original room check; the stricter check introduced October 1, 2026 is not in these files). 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "cheapest_named_a_room",
+      "type": "boolean",
+      "description": "yes when the cheapest listing names at least one room type, whatever its price. 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "fees_unverified",
+      "type": "boolean",
+      "description": "yes when no listing for this hotel reported a before-tax rate, so every price for it is the rate as listed and fees such as resort or property fees may be missing from all of them. 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "check_in",
+      "type": "date",
+      "description": "Check-in date searched (2 adults, 2 nights).",
+      "format": "default",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "check_out",
+      "type": "date",
+      "description": "Check-out date searched.",
+      "format": "default",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "free_cancellation_elsewhere_same_or_less",
+      "type": "boolean",
+      "description": "yes when, for at least one of Booking.com, Expedia, Hotels.com or Agoda (matched by name, so 'Expedia.ca' counts as Expedia), that site's lowest listing has no free cancellation and a listing from another site offers free cancellation at no more than 1.02 times that price. Compared on the nightly rate including taxes and fees as the sites reported them. Empty when no price was returned.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ]
+     }
+    ],
+    "missingValues": [
+     ""
+    ]
+   }
+  },
+  {
+   "name": "hotel-price-dispersion-2026-10-r15-us-cities",
+   "title": "Snapshot r15, October 1, 2026",
+   "description": "Snapshot r15: 25 US cities and towns. Searched October 1, 2026 (UTC) for a 2-night stay 2026-11-05 to 2026-11-07 (35 days ahead), 2 adults, US market, US dollars. 426 hotels, one row each; 402 with a price.",
+   "path": "data/hotel-price-dispersion-2026-10-r15-us-cities.csv",
+   "profile": "tabular-data-resource",
+   "format": "csv",
+   "mediatype": "text/csv",
+   "encoding": "utf-8",
+   "bytes": 58144,
+   "hash": "sha256:f06cefb5aaa4880a2b131f732eac2522f139b97e22571eee0d16fe2846484d18",
+   "dialect": {
+    "delimiter": ",",
+    "lineTerminator": "\r\n",
+    "quoteChar": "\"",
+    "doubleQuote": true,
+    "header": true
+   },
+   "schema": {
+    "fields": [
+     {
+      "name": "city",
+      "type": "string",
+      "description": "The market searched: Google Hotels was asked for 'hotels in <city>'. Two searches priced somewhere else and are labelled for what they priced: in r7, the search meant for Naples, Italy returned hotels in Naples, Florida (labelled 'Naples, Florida', region US); in r16, 'hotels in Hoi An' returned US East Coast beach hotels (kept under 'Hoi An', region US).",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "region",
+      "type": "string",
+      "description": "Study grouping, not a standard geography: US (United States); EU (Europe, including countries outside the European Union such as the UK, Norway, Switzerland and Iceland); AM (the Americas outside the US, including Canada, Latin America, the Caribbean and Puerto Rico); APAC (Asia-Pacific, which in this study also holds the Middle East, Istanbul, Cape Town and Marrakech).",
+      "constraints": {
+       "required": true,
+       "enum": [
+        "US",
+        "EU",
+        "AM",
+        "APAC"
+       ]
+      }
+     },
+     {
+      "name": "hotel",
+      "type": "string",
+      "description": "Property name as Google Hotels listed it. Only results Google Hotels typed as a hotel (not a vacation rental) were kept.",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "segment",
+      "type": "string",
+      "description": "'chain' when the hotel name matches a list of chain brand names fixed before the first run (Marriott, Hilton, Hyatt, IHG, Accor, Wyndham, Choice and others), otherwise 'independent'. A name rule: a chain hotel whose name carries no brand counts as independent.",
+      "constraints": {
+       "required": true,
+       "enum": [
+        "chain",
+        "independent"
+       ]
+      }
+     },
+     {
+      "name": "sites_listed",
+      "type": "integer",
+      "description": "Number of listing entries kept in the analysis for this hotel: the 12 lowest-priced entries, so never more than 12. A site that Google Hotels lists twice counts twice. The going rate and the cheapest price are computed from every entry, which for most hotels was more than 12. 0 when no price was returned.",
+      "constraints": {
+       "required": true,
+       "minimum": 0,
+       "maximum": 12
+      }
+     },
+     {
+      "name": "going_rate_usd",
+      "type": "integer",
+      "description": "The going rate, US dollars a night: the nightly price shared by the largest number of listings that offer free cancellation or name a room (all listings when none do), ties broken toward the lower price. Each listing's price is its before-tax nightly rate when the site reported one, otherwise the nightly rate it listed (which may include taxes and fees). Empty when no price was returned.",
+      "constraints": {
+       "minimum": 1
+      }
+     },
+     {
+      "name": "cheapest_usd",
+      "type": "integer",
+      "description": "The lowest nightly price among all listings for the hotel, US dollars, on the same basis as going_rate_usd. Empty when no price was returned.",
+      "constraints": {
+       "minimum": 1
+      }
+     },
+     {
+      "name": "cheapest_site",
+      "type": "string",
+      "description": "The site with the lowest price, as Google Hotels names it (for example 'Booking.com', 'Expedia.ca', 'trivago DEALS'). Ties keep Google Hotels' order. Empty when no price was returned."
+     },
+     {
+      "name": "discount_pct",
+      "type": "number",
+      "description": "100 x (going_rate_usd - cheapest_usd) / going_rate_usd, rounded to one decimal. To apply a threshold, compute it from the two price columns: rounding moves a few rows across a boundary. Empty when no price was returned.",
+      "constraints": {
+       "minimum": 0,
+       "maximum": 100
+      }
+     },
+     {
+      "name": "verdict",
+      "type": "string",
+      "description": "The study's label for the hotel. PARITY: no listing more than 5% below the going rate. UNVERIFIED_LOWER: the cheapest listing is more than 5% below the going rate and its room is not shown to match. REAL_LOWER_MATCHED: the cheapest listing names a room, is more than 5% below the going rate, and its first-listed room name matches the first-listed room name of a listing priced within 2% of the going rate, by the study's room-name rules. A name match is evidence, not proof, of the same room. Empty when no price was returned.",
+      "constraints": {
+       "enum": [
+        "PARITY",
+        "UNVERIFIED_LOWER",
+        "REAL_LOWER_MATCHED"
+       ]
+      }
+     },
+     {
+      "name": "cheaper_room_name_matched",
+      "type": "boolean",
+      "description": "yes when verdict is REAL_LOWER_MATCHED (the study page calls this the original room check; the stricter check introduced October 1, 2026 is not in these files). 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "cheapest_named_a_room",
+      "type": "boolean",
+      "description": "yes when the cheapest listing names at least one room type, whatever its price. 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "fees_unverified",
+      "type": "boolean",
+      "description": "yes when no listing for this hotel reported a before-tax rate, so every price for it is the rate as listed and fees such as resort or property fees may be missing from all of them. 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "check_in",
+      "type": "date",
+      "description": "Check-in date searched (2 adults, 2 nights).",
+      "format": "default",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "check_out",
+      "type": "date",
+      "description": "Check-out date searched.",
+      "format": "default",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "free_cancellation_elsewhere_same_or_less",
+      "type": "boolean",
+      "description": "yes when, for at least one of Booking.com, Expedia, Hotels.com or Agoda (matched by name, so 'Expedia.ca' counts as Expedia), that site's lowest listing has no free cancellation and a listing from another site offers free cancellation at no more than 1.02 times that price. Compared on the nightly rate including taxes and fees as the sites reported them. Empty when no price was returned.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ]
+     }
+    ],
+    "missingValues": [
+     ""
+    ]
+   }
+  },
+  {
+   "name": "hotel-price-dispersion-2026-10-r16-intl-cities",
+   "title": "Snapshot r16, October 1, 2026",
+   "description": "Snapshot r16: 25 international cities (one search returned US beach hotels). Searched October 1, 2026 (UTC) for a 2-night stay 2026-11-05 to 2026-11-07 (35 days ahead), 2 adults, US market, US dollars. 439 hotels, one row each; 432 with a price.",
+   "path": "data/hotel-price-dispersion-2026-10-r16-intl-cities.csv",
+   "profile": "tabular-data-resource",
+   "format": "csv",
+   "mediatype": "text/csv",
+   "encoding": "utf-8",
+   "bytes": 56660,
+   "hash": "sha256:a448141c9002deb4efd83fd5ed8a40a4d7d5a11b01b3d4fcfe2934422bca4745",
+   "dialect": {
+    "delimiter": ",",
+    "lineTerminator": "\r\n",
+    "quoteChar": "\"",
+    "doubleQuote": true,
+    "header": true
+   },
+   "schema": {
+    "fields": [
+     {
+      "name": "city",
+      "type": "string",
+      "description": "The market searched: Google Hotels was asked for 'hotels in <city>'. Two searches priced somewhere else and are labelled for what they priced: in r7, the search meant for Naples, Italy returned hotels in Naples, Florida (labelled 'Naples, Florida', region US); in r16, 'hotels in Hoi An' returned US East Coast beach hotels (kept under 'Hoi An', region US).",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "region",
+      "type": "string",
+      "description": "Study grouping, not a standard geography: US (United States); EU (Europe, including countries outside the European Union such as the UK, Norway, Switzerland and Iceland); AM (the Americas outside the US, including Canada, Latin America, the Caribbean and Puerto Rico); APAC (Asia-Pacific, which in this study also holds the Middle East, Istanbul, Cape Town and Marrakech).",
+      "constraints": {
+       "required": true,
+       "enum": [
+        "US",
+        "EU",
+        "AM",
+        "APAC"
+       ]
+      }
+     },
+     {
+      "name": "hotel",
+      "type": "string",
+      "description": "Property name as Google Hotels listed it. Only results Google Hotels typed as a hotel (not a vacation rental) were kept.",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "segment",
+      "type": "string",
+      "description": "'chain' when the hotel name matches a list of chain brand names fixed before the first run (Marriott, Hilton, Hyatt, IHG, Accor, Wyndham, Choice and others), otherwise 'independent'. A name rule: a chain hotel whose name carries no brand counts as independent.",
+      "constraints": {
+       "required": true,
+       "enum": [
+        "chain",
+        "independent"
+       ]
+      }
+     },
+     {
+      "name": "sites_listed",
+      "type": "integer",
+      "description": "Number of listing entries kept in the analysis for this hotel: the 12 lowest-priced entries, so never more than 12. A site that Google Hotels lists twice counts twice. The going rate and the cheapest price are computed from every entry, which for most hotels was more than 12. 0 when no price was returned.",
+      "constraints": {
+       "required": true,
+       "minimum": 0,
+       "maximum": 12
+      }
+     },
+     {
+      "name": "going_rate_usd",
+      "type": "integer",
+      "description": "The going rate, US dollars a night: the nightly price shared by the largest number of listings that offer free cancellation or name a room (all listings when none do), ties broken toward the lower price. Each listing's price is its before-tax nightly rate when the site reported one, otherwise the nightly rate it listed (which may include taxes and fees). Empty when no price was returned.",
+      "constraints": {
+       "minimum": 1
+      }
+     },
+     {
+      "name": "cheapest_usd",
+      "type": "integer",
+      "description": "The lowest nightly price among all listings for the hotel, US dollars, on the same basis as going_rate_usd. Empty when no price was returned.",
+      "constraints": {
+       "minimum": 1
+      }
+     },
+     {
+      "name": "cheapest_site",
+      "type": "string",
+      "description": "The site with the lowest price, as Google Hotels names it (for example 'Booking.com', 'Expedia.ca', 'trivago DEALS'). Ties keep Google Hotels' order. Empty when no price was returned."
+     },
+     {
+      "name": "discount_pct",
+      "type": "number",
+      "description": "100 x (going_rate_usd - cheapest_usd) / going_rate_usd, rounded to one decimal. To apply a threshold, compute it from the two price columns: rounding moves a few rows across a boundary. Empty when no price was returned.",
+      "constraints": {
+       "minimum": 0,
+       "maximum": 100
+      }
+     },
+     {
+      "name": "verdict",
+      "type": "string",
+      "description": "The study's label for the hotel. PARITY: no listing more than 5% below the going rate. UNVERIFIED_LOWER: the cheapest listing is more than 5% below the going rate and its room is not shown to match. REAL_LOWER_MATCHED: the cheapest listing names a room, is more than 5% below the going rate, and its first-listed room name matches the first-listed room name of a listing priced within 2% of the going rate, by the study's room-name rules. A name match is evidence, not proof, of the same room. Empty when no price was returned.",
+      "constraints": {
+       "enum": [
+        "PARITY",
+        "UNVERIFIED_LOWER",
+        "REAL_LOWER_MATCHED"
+       ]
+      }
+     },
+     {
+      "name": "cheaper_room_name_matched",
+      "type": "boolean",
+      "description": "yes when verdict is REAL_LOWER_MATCHED (the study page calls this the original room check; the stricter check introduced October 1, 2026 is not in these files). 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "cheapest_named_a_room",
+      "type": "boolean",
+      "description": "yes when the cheapest listing names at least one room type, whatever its price. 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "fees_unverified",
+      "type": "boolean",
+      "description": "yes when no listing for this hotel reported a before-tax rate, so every price for it is the rate as listed and fees such as resort or property fees may be missing from all of them. 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "check_in",
+      "type": "date",
+      "description": "Check-in date searched (2 adults, 2 nights).",
+      "format": "default",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "check_out",
+      "type": "date",
+      "description": "Check-out date searched.",
+      "format": "default",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "free_cancellation_elsewhere_same_or_less",
+      "type": "boolean",
+      "description": "yes when, for at least one of Booking.com, Expedia, Hotels.com or Agoda (matched by name, so 'Expedia.ca' counts as Expedia), that site's lowest listing has no free cancellation and a listing from another site offers free cancellation at no more than 1.02 times that price. Compared on the nightly rate including taxes and fees as the sites reported them. Empty when no price was returned.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ]
+     }
+    ],
+    "missingValues": [
+     ""
+    ]
+   }
+  },
+  {
+   "name": "hotel-price-dispersion-2026-10-r17-weekly",
+   "title": "Snapshot r17, October 3, 2026",
+   "description": "Snapshot r17: weekly: 10 new cities, and 14 cities priced again with the hotels of their r2 snapshot. Searched October 3, 2026 (UTC) for a 2-night stay 2026-11-07 to 2026-11-09 (35 days ahead), 2 adults, US market, US dollars. 419 hotels, one row each; 409 with a price.",
+   "path": "data/hotel-price-dispersion-2026-10-r17-weekly.csv",
+   "profile": "tabular-data-resource",
+   "format": "csv",
+   "mediatype": "text/csv",
+   "encoding": "utf-8",
+   "bytes": 54851,
+   "hash": "sha256:8c4fcd22a3ccd977efd00dc9f8cd7c9da1f7847ae0ce1c6ae65227a9d76b8019",
+   "dialect": {
+    "delimiter": ",",
+    "lineTerminator": "\r\n",
+    "quoteChar": "\"",
+    "doubleQuote": true,
+    "header": true
+   },
+   "schema": {
+    "fields": [
+     {
+      "name": "city",
+      "type": "string",
+      "description": "The market searched: Google Hotels was asked for 'hotels in <city>'. Two searches priced somewhere else and are labelled for what they priced: in r7, the search meant for Naples, Italy returned hotels in Naples, Florida (labelled 'Naples, Florida', region US); in r16, 'hotels in Hoi An' returned US East Coast beach hotels (kept under 'Hoi An', region US).",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "region",
+      "type": "string",
+      "description": "Study grouping, not a standard geography: US (United States); EU (Europe, including countries outside the European Union such as the UK, Norway, Switzerland and Iceland); AM (the Americas outside the US, including Canada, Latin America, the Caribbean and Puerto Rico); APAC (Asia-Pacific, which in this study also holds the Middle East, Istanbul, Cape Town and Marrakech).",
+      "constraints": {
+       "required": true,
+       "enum": [
+        "US",
+        "EU",
+        "AM",
+        "APAC"
+       ]
+      }
+     },
+     {
+      "name": "hotel",
+      "type": "string",
+      "description": "Property name as Google Hotels listed it. Only results Google Hotels typed as a hotel (not a vacation rental) were kept.",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "segment",
+      "type": "string",
+      "description": "'chain' when the hotel name matches a list of chain brand names fixed before the first run (Marriott, Hilton, Hyatt, IHG, Accor, Wyndham, Choice and others), otherwise 'independent'. A name rule: a chain hotel whose name carries no brand counts as independent.",
+      "constraints": {
+       "required": true,
+       "enum": [
+        "chain",
+        "independent"
+       ]
+      }
+     },
+     {
+      "name": "sites_listed",
+      "type": "integer",
+      "description": "Number of listing entries kept in the analysis for this hotel: the 12 lowest-priced entries, so never more than 12. A site that Google Hotels lists twice counts twice. The going rate and the cheapest price are computed from every entry, which for most hotels was more than 12. 0 when no price was returned.",
+      "constraints": {
+       "required": true,
+       "minimum": 0,
+       "maximum": 12
+      }
+     },
+     {
+      "name": "going_rate_usd",
+      "type": "integer",
+      "description": "The going rate, US dollars a night: the nightly price shared by the largest number of listings that offer free cancellation or name a room (all listings when none do), ties broken toward the lower price. Each listing's price is its before-tax nightly rate when the site reported one, otherwise the nightly rate it listed (which may include taxes and fees). Empty when no price was returned.",
+      "constraints": {
+       "minimum": 1
+      }
+     },
+     {
+      "name": "cheapest_usd",
+      "type": "integer",
+      "description": "The lowest nightly price among all listings for the hotel, US dollars, on the same basis as going_rate_usd. Empty when no price was returned.",
+      "constraints": {
+       "minimum": 1
+      }
+     },
+     {
+      "name": "cheapest_site",
+      "type": "string",
+      "description": "The site with the lowest price, as Google Hotels names it (for example 'Booking.com', 'Expedia.ca', 'trivago DEALS'). Ties keep Google Hotels' order. Empty when no price was returned."
+     },
+     {
+      "name": "discount_pct",
+      "type": "number",
+      "description": "100 x (going_rate_usd - cheapest_usd) / going_rate_usd, rounded to one decimal. To apply a threshold, compute it from the two price columns: rounding moves a few rows across a boundary. Empty when no price was returned.",
+      "constraints": {
+       "minimum": 0,
+       "maximum": 100
+      }
+     },
+     {
+      "name": "verdict",
+      "type": "string",
+      "description": "The study's label for the hotel. PARITY: no listing more than 5% below the going rate. UNVERIFIED_LOWER: the cheapest listing is more than 5% below the going rate and its room is not shown to match. REAL_LOWER_MATCHED: the cheapest listing names a room, is more than 5% below the going rate, and its first-listed room name matches the first-listed room name of a listing priced within 2% of the going rate, by the study's room-name rules. A name match is evidence, not proof, of the same room. Empty when no price was returned.",
+      "constraints": {
+       "enum": [
+        "PARITY",
+        "UNVERIFIED_LOWER",
+        "REAL_LOWER_MATCHED"
+       ]
+      }
+     },
+     {
+      "name": "cheaper_room_name_matched",
+      "type": "boolean",
+      "description": "yes when verdict is REAL_LOWER_MATCHED (the study page calls this the original room check; the stricter check introduced October 1, 2026 is not in these files). 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "cheapest_named_a_room",
+      "type": "boolean",
+      "description": "yes when the cheapest listing names at least one room type, whatever its price. 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "fees_unverified",
+      "type": "boolean",
+      "description": "yes when no listing for this hotel reported a before-tax rate, so every price for it is the rate as listed and fees such as resort or property fees may be missing from all of them. 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "check_in",
+      "type": "date",
+      "description": "Check-in date searched (2 adults, 2 nights).",
+      "format": "default",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "check_out",
+      "type": "date",
+      "description": "Check-out date searched.",
+      "format": "default",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "free_cancellation_elsewhere_same_or_less",
+      "type": "boolean",
+      "description": "yes when, for at least one of Booking.com, Expedia, Hotels.com or Agoda (matched by name, so 'Expedia.ca' counts as Expedia), that site's lowest listing has no free cancellation and a listing from another site offers free cancellation at no more than 1.02 times that price. Compared on the nightly rate including taxes and fees as the sites reported them. Empty when no price was returned.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ]
+     }
+    ],
+    "missingValues": [
+     ""
+    ]
+   }
+  },
+  {
+   "name": "hotel-price-dispersion-2026-10-r18-weekly",
+   "title": "Snapshot r18, October 10, 2026",
+   "description": "Snapshot r18: weekly: 10 new cities, and 13 cities priced again with the hotels of their r2 or r3 snapshot. Searched October 10, 2026 (UTC) for a 2-night stay 2026-11-14 to 2026-11-16 (35 days ahead), 2 adults, US market, US dollars. 394 hotels, one row each; 381 with a price.",
+   "path": "data/hotel-price-dispersion-2026-10-r18-weekly.csv",
+   "profile": "tabular-data-resource",
+   "format": "csv",
+   "mediatype": "text/csv",
+   "encoding": "utf-8",
+   "bytes": 49899,
+   "hash": "sha256:d0871f0157cf61dd8751360a15f16d80c00f5f992fd0ae242e2950fb4c9b4c30",
+   "dialect": {
+    "delimiter": ",",
+    "lineTerminator": "\r\n",
+    "quoteChar": "\"",
+    "doubleQuote": true,
+    "header": true
+   },
+   "schema": {
+    "fields": [
+     {
+      "name": "city",
+      "type": "string",
+      "description": "The market searched: Google Hotels was asked for 'hotels in <city>'. Two searches priced somewhere else and are labelled for what they priced: in r7, the search meant for Naples, Italy returned hotels in Naples, Florida (labelled 'Naples, Florida', region US); in r16, 'hotels in Hoi An' returned US East Coast beach hotels (kept under 'Hoi An', region US).",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "region",
+      "type": "string",
+      "description": "Study grouping, not a standard geography: US (United States); EU (Europe, including countries outside the European Union such as the UK, Norway, Switzerland and Iceland); AM (the Americas outside the US, including Canada, Latin America, the Caribbean and Puerto Rico); APAC (Asia-Pacific, which in this study also holds the Middle East, Istanbul, Cape Town and Marrakech).",
+      "constraints": {
+       "required": true,
+       "enum": [
+        "US",
+        "EU",
+        "AM",
+        "APAC"
+       ]
+      }
+     },
+     {
+      "name": "hotel",
+      "type": "string",
+      "description": "Property name as Google Hotels listed it. Only results Google Hotels typed as a hotel (not a vacation rental) were kept.",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "segment",
+      "type": "string",
+      "description": "'chain' when the hotel name matches a list of chain brand names fixed before the first run (Marriott, Hilton, Hyatt, IHG, Accor, Wyndham, Choice and others), otherwise 'independent'. A name rule: a chain hotel whose name carries no brand counts as independent.",
+      "constraints": {
+       "required": true,
+       "enum": [
+        "chain",
+        "independent"
+       ]
+      }
+     },
+     {
+      "name": "sites_listed",
+      "type": "integer",
+      "description": "Number of listing entries kept in the analysis for this hotel: the 12 lowest-priced entries, so never more than 12. A site that Google Hotels lists twice counts twice. The going rate and the cheapest price are computed from every entry, which for most hotels was more than 12. 0 when no price was returned.",
+      "constraints": {
+       "required": true,
+       "minimum": 0,
+       "maximum": 12
+      }
+     },
+     {
+      "name": "going_rate_usd",
+      "type": "integer",
+      "description": "The going rate, US dollars a night: the nightly price shared by the largest number of listings that offer free cancellation or name a room (all listings when none do), ties broken toward the lower price. Each listing's price is its before-tax nightly rate when the site reported one, otherwise the nightly rate it listed (which may include taxes and fees). Empty when no price was returned.",
+      "constraints": {
+       "minimum": 1
+      }
+     },
+     {
+      "name": "cheapest_usd",
+      "type": "integer",
+      "description": "The lowest nightly price among all listings for the hotel, US dollars, on the same basis as going_rate_usd. Empty when no price was returned.",
+      "constraints": {
+       "minimum": 1
+      }
+     },
+     {
+      "name": "cheapest_site",
+      "type": "string",
+      "description": "The site with the lowest price, as Google Hotels names it (for example 'Booking.com', 'Expedia.ca', 'trivago DEALS'). Ties keep Google Hotels' order. Empty when no price was returned."
+     },
+     {
+      "name": "discount_pct",
+      "type": "number",
+      "description": "100 x (going_rate_usd - cheapest_usd) / going_rate_usd, rounded to one decimal. To apply a threshold, compute it from the two price columns: rounding moves a few rows across a boundary. Empty when no price was returned.",
+      "constraints": {
+       "minimum": 0,
+       "maximum": 100
+      }
+     },
+     {
+      "name": "verdict",
+      "type": "string",
+      "description": "The study's label for the hotel. PARITY: no listing more than 5% below the going rate. UNVERIFIED_LOWER: the cheapest listing is more than 5% below the going rate and its room is not shown to match. REAL_LOWER_MATCHED: the cheapest listing names a room, is more than 5% below the going rate, and its first-listed room name matches the first-listed room name of a listing priced within 2% of the going rate, by the study's room-name rules. A name match is evidence, not proof, of the same room. Empty when no price was returned.",
+      "constraints": {
+       "enum": [
+        "PARITY",
+        "UNVERIFIED_LOWER",
+        "REAL_LOWER_MATCHED"
+       ]
+      }
+     },
+     {
+      "name": "cheaper_room_name_matched",
+      "type": "boolean",
+      "description": "yes when verdict is REAL_LOWER_MATCHED (the study page calls this the original room check; the stricter check introduced October 1, 2026 is not in these files). 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "cheapest_named_a_room",
+      "type": "boolean",
+      "description": "yes when the cheapest listing names at least one room type, whatever its price. 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "fees_unverified",
+      "type": "boolean",
+      "description": "yes when no listing for this hotel reported a before-tax rate, so every price for it is the rate as listed and fees such as resort or property fees may be missing from all of them. 'no' on rows without a price.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "check_in",
+      "type": "date",
+      "description": "Check-in date searched (2 adults, 2 nights).",
+      "format": "default",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "check_out",
+      "type": "date",
+      "description": "Check-out date searched.",
+      "format": "default",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "free_cancellation_elsewhere_same_or_less",
+      "type": "boolean",
+      "description": "yes when, for at least one of Booking.com, Expedia, Hotels.com or Agoda (matched by name, so 'Expedia.ca' counts as Expedia), that site's lowest listing has no free cancellation and a listing from another site offers free cancellation at no more than 1.02 times that price. Compared on the nightly rate including taxes and fees as the sites reported them. Empty when no price was returned.",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ]
+     }
+    ],
+    "missingValues": [
+     ""
+    ]
+   }
+  },
+  {
+   "name": "hotel-price-week-later-2026-09",
+   "title": "Week-later repeat of snapshot r1",
+   "description": "The stay of snapshot r1 (2026-10-13 to 2026-10-15) priced again on September 29, 2026, 7 days after September 22, 2026. Hotels matched by Google's property ID; only the 181 hotels with a going rate on both dates.",
+   "path": "data/hotel-price-week-later-2026-09.csv",
+   "profile": "tabular-data-resource",
+   "format": "csv",
+   "mediatype": "text/csv",
+   "encoding": "utf-8",
+   "bytes": 19159,
+   "hash": "sha256:5e6b73c59d2e507dfaf2a6f4cb1df33f94254d834d6abc31502b3b951dc9b75a",
+   "dialect": {
+    "delimiter": ",",
+    "lineTerminator": "\r\n",
+    "quoteChar": "\"",
+    "doubleQuote": true,
+    "header": true
+   },
+   "schema": {
+    "fields": [
+     {
+      "name": "city",
+      "type": "string",
+      "description": "The market of the base snapshot ('hotels in <city>').",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "hotel",
+      "type": "string",
+      "description": "Property name as Google Hotels listed it. Only results Google Hotels typed as a hotel (not a vacation rental) were kept.",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "check_in",
+      "type": "date",
+      "description": "Check-in date, the same stay on both dates (2 adults, 2 nights).",
+      "format": "default",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "check_out",
+      "type": "date",
+      "description": "Check-out date searched.",
+      "format": "default",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "going_rate_usd_sep22",
+      "type": "integer",
+      "description": "Going rate on September 22, 2026, US dollars a night (definition as in the snapshot files). Each listing's price is its before-tax nightly rate when the site reported one, otherwise the nightly rate it listed (which may include taxes and fees).",
+      "constraints": {
+       "required": true,
+       "minimum": 1
+      }
+     },
+     {
+      "name": "going_rate_usd_sep29",
+      "type": "integer",
+      "description": "Going rate on September 29, 2026, US dollars a night (definition as in the snapshot files). Each listing's price is its before-tax nightly rate when the site reported one, otherwise the nightly rate it listed (which may include taxes and fees).",
+      "constraints": {
+       "required": true,
+       "minimum": 1
+      }
+     },
+     {
+      "name": "change_pct",
+      "type": "number",
+      "description": "100 x (going rate on September 29, 2026 - going rate on September 22, 2026) / going rate on September 22, 2026, rounded to one decimal.",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "cheapest_site_sep22",
+      "type": "string",
+      "description": "The site with the lowest price on September 22, 2026.",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "cheapest_site_sep29",
+      "type": "string",
+      "description": "The site with the lowest price on September 29, 2026.",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "cheaper_5pct_sep22",
+      "type": "boolean",
+      "description": "yes when on September 22, 2026 the cheapest listing was 5% or more below the going rate (computed from the unrounded prices).",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "cheaper_5pct_sep29",
+      "type": "boolean",
+      "description": "yes when on September 29, 2026 the cheapest listing was 5% or more below the going rate (computed from the unrounded prices).",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     }
+    ],
+    "missingValues": [
+     ""
+    ]
+   }
+  },
+  {
+   "name": "hotel-price-week-later-r2-2026-10",
+   "title": "Week-later repeat of snapshot r2",
+   "description": "The stay of snapshot r2 (2026-10-30 to 2026-11-01) priced again on October 2, 2026, 7 days after September 25, 2026. Hotels matched by Google's property ID; only the 427 hotels with a going rate on both dates.",
+   "path": "data/hotel-price-week-later-r2-2026-10.csv",
+   "profile": "tabular-data-resource",
+   "format": "csv",
+   "mediatype": "text/csv",
+   "encoding": "utf-8",
+   "bytes": 44100,
+   "hash": "sha256:8998cbf78e1ce56ac6b7e9801c5a433869726af7339d5beb6fb623ed0955dd9f",
+   "dialect": {
+    "delimiter": ",",
+    "lineTerminator": "\r\n",
+    "quoteChar": "\"",
+    "doubleQuote": true,
+    "header": true
+   },
+   "schema": {
+    "fields": [
+     {
+      "name": "city",
+      "type": "string",
+      "description": "The market of the base snapshot ('hotels in <city>').",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "hotel",
+      "type": "string",
+      "description": "Property name as Google Hotels listed it. Only results Google Hotels typed as a hotel (not a vacation rental) were kept.",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "check_in",
+      "type": "date",
+      "description": "Check-in date, the same stay on both dates (2 adults, 2 nights).",
+      "format": "default",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "check_out",
+      "type": "date",
+      "description": "Check-out date searched.",
+      "format": "default",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "going_rate_usd_sep25",
+      "type": "integer",
+      "description": "Going rate on September 25, 2026, US dollars a night (definition as in the snapshot files). Each listing's price is its before-tax nightly rate when the site reported one, otherwise the nightly rate it listed (which may include taxes and fees).",
+      "constraints": {
+       "required": true,
+       "minimum": 1
+      }
+     },
+     {
+      "name": "going_rate_usd_oct2",
+      "type": "integer",
+      "description": "Going rate on October 2, 2026, US dollars a night (definition as in the snapshot files). Each listing's price is its before-tax nightly rate when the site reported one, otherwise the nightly rate it listed (which may include taxes and fees).",
+      "constraints": {
+       "required": true,
+       "minimum": 1
+      }
+     },
+     {
+      "name": "change_pct",
+      "type": "number",
+      "description": "100 x (going rate on October 2, 2026 - going rate on September 25, 2026) / going rate on September 25, 2026, rounded to one decimal.",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "cheapest_site_sep25",
+      "type": "string",
+      "description": "The site with the lowest price on September 25, 2026.",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "cheapest_site_oct2",
+      "type": "string",
+      "description": "The site with the lowest price on October 2, 2026.",
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "cheaper_5pct_sep25",
+      "type": "boolean",
+      "description": "yes when on September 25, 2026 the cheapest listing was 5% or more below the going rate (computed from the unrounded prices).",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     },
+     {
+      "name": "cheaper_5pct_oct2",
+      "type": "boolean",
+      "description": "yes when on October 2, 2026 the cheapest listing was 5% or more below the going rate (computed from the unrounded prices).",
+      "trueValues": [
+       "yes"
+      ],
+      "falseValues": [
+       "no"
+      ],
+      "constraints": {
+       "required": true
+      }
+     }
+    ],
+    "missingValues": [
+     ""
+    ]
+   }
+  }
+ ]
+}
